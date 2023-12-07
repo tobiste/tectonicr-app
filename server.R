@@ -23,6 +23,8 @@ function(input, output) {
     }
   })
 
+
+
   stress_df_filt <-  reactive({
     stress_df |>
     filter(
@@ -34,7 +36,32 @@ function(input, output) {
     )
   })
 
-  output$interact_map <- renderPlot({
+  # pb_distance <- reactive({
+  #   if (!is.null(por())) {
+  #     pair = ifelse(input$plate_fix<input$plate_rot, paste0(input$plate_fix, "-", input$plate_rot), paste0(input$plate_rot, "-", input$plate_fix))
+  #     plate2dist <- filter(plates2plot(), pair == pair)
+  #
+  #     t=TRUE
+  #     if(input$prd_type %in% c("out", "in")) t = FALSE
+  #     tectonicr::distance_from_pb(stress_df_filt0(), por(), plate2dist, tangential = t, km = TRUE)
+  #   } else {
+  #     NULL
+  #   }
+  # })
+  #
+  # stress_df_filt <-  reactive({
+  #   if(is.null(pb_distance())){
+  #     stress_df_filt0()
+  #   } else {
+  #   stress_df_filt0() |>
+  #     mutate(pbdist = pb_distance()) |>
+  #     filter(
+  #       between(pbdist, input$pb_dist_filt[1], input$pb_dist_filt[2])
+  #     )
+  #   }
+  # })
+
+  output$interact_map <- renderGirafe({
     #regime_filt <- gsub("U", NA, input$regime_filt)
     #plates2plot <- plates[[input$plate_boundary_choice]]
 
@@ -88,18 +115,52 @@ function(input, output) {
     x <- stress_df_filt()
 
     if (is.null(por()) | !input$por_crs) {
-      ggplot() +
-        geom_sf(data = land) +
-        geom_sf(data = plates2plot(), color = "red") +
-        geom_sf(data = lcc, color = "#56B4E9", lwd = .5, alpha = .9, lty = 4) +
-        geom_sf(data = lc, color = "#56B4E9", lwd = .5, alpha = .9, lty = 3) +
-        geom_sf(data = gc, color = "#56B4E9", lwd = .5, alpha = .9, lty = 2) +
-        geom_sf(data = sc, color = "#56B4E9", lwd = .5, alpha = .9, lty = 1) +
-        geom_spoke(data = x, aes(lon, lat, angle = angle_map, color = regime, radius = radius_map), position = "center_spoke") +
-        scale_color_manual("Stress regime", values = stress_colors()) +
-        theme_bw() +
-        labs(x = "", y = "") +
+      # ggplot(data = x, aes(lon, lat, angle = angle_map, color = regime, radius = radius_map)) +
+      #   geom_sf(data = land, inherit.aes = FALSE) +
+      #   geom_sf(data = plates2plot(), color = "red", inherit.aes = FALSE) +
+      #   geom_sf(data = lcc, color = "#56B4E9", lwd = .5, alpha = .9, lty = 4, inherit.aes = FALSE) +
+      #   geom_sf(data = lc, color = "#56B4E9", lwd = .5, alpha = .9, lty = 3, inherit.aes = FALSE) +
+      #   geom_sf(data = gc, color = "#56B4E9", lwd = .5, alpha = .9, lty = 2, inherit.aes = FALSE) +
+      #   geom_sf(data = sc, color = "#56B4E9", lwd = .5, alpha = .9, lty = 1, inherit.aes = FALSE) +
+      #
+      #   geom_spoke(data = stress_df, position = "center_spoke", alpha = .2, inherit.aes = TRUE) +
+      #   geom_spoke(position = "center_spoke") +
+      #   scale_color_manual("Stress regime", values = stress_colors()) +
+      #   theme_bw() +
+      #   labs(x = "", y = "") +
+      #   coord_sf(xlim = range(x$lon), ylim = range(x$lat), expand = FALSE)
+
+      mi <- ggplot(data = x, aes(lon, lat, angle = angle_map, color = regime, radius = radius_map, tooltip = locality, data_id = id)) +
+        geom_sf(data = land, inherit.aes = FALSE) +
+        geom_sf(data = plates2plot(), color = "red", inherit.aes = FALSE) +
+        geom_sf(data = lcc, color = "#56B4E9", lwd = .5, alpha = .9, lty = 4, inherit.aes = FALSE) +
+        geom_sf(data = lc, color = "#56B4E9", lwd = .5, alpha = .9, lty = 3, inherit.aes = FALSE) +
+        geom_sf(data = gc, color = "#56B4E9", lwd = .5, alpha = .9, lty = 2, inherit.aes = FALSE) +
+        geom_sf(data = sc, color = "#56B4E9", lwd = .5, alpha = .9, lty = 1, inherit.aes = FALSE) +
+
+        geom_spoke(data = stress_df, position = "center_spoke", alpha = .2, inherit.aes = TRUE) +
+        geom_spoke_interactive(position = "center_spoke", hover_nearest = FALSE) +
+
+        scale_color_manual("Stress regime", values =  stress_colors()) +
+          theme_bw() +
+          labs(x = "", y = "") +
         coord_sf(xlim = range(x$lon), ylim = range(x$lat), expand = FALSE)
+
+
+      girafe(ggobj = mi,
+             options = list(
+                 opts_selection(
+                     type = "single",
+                     only_shiny = FALSE),
+                 opts_tooltip(use_fill = TRUE),
+                 opts_hover_inv(css = "opacity:0.1;"),
+                 opts_hover(css = "stroke-width:2;"),
+                 opts_zoom(max = 5)
+             )
+      )
+
+
+
     } else {
       # PoR transformation and map
       x_por <- PoR_coordinates(x, por())
@@ -130,33 +191,14 @@ function(input, output) {
           if ("sc" %in% input$traj_filt) geom_hline(yintercept = seq(-90, 90, 10), lty = 1, lwd = .5, alpha = .9, color = "#56B4E9")
         } +
         geom_spoke(data = x_por, aes(lon.PoR, lat.PoR, angle = azi_por_map, color = regime, radius = radius_map), position = "center_spoke") +
-        scale_color_manual("Stress regime", values = stress_colors()) +
+        scale_color_manual("Tectonic regime", values = stress_colors()) +
         theme_bw() +
         labs(x = "", y = "") +
-        coord_sf(xlim = range(x_por$lon.PoR), ylim = range(x_por$lat.PoR), expand = FALSE)
+        #coord_sf(xlim = range(x_por$lon.PoR), ylim = range(x_por$lat.PoR), expand = FALSE)
+        coord_equal(xlim = range(x_por$lon.PoR), ylim = range(x_por$lat.PoR), expand = FALSE)
     }
 
-    # mi <- ggplot() +
-    #     geom_sf(data = land) +
-    #     geom_sf(data = plates, color = "red") +
-    #     geom_spoke_interactive(data = stress_df_2_plot, aes(lon, lat, angle =angle_map, color = regime, radius = radius_map, tooltip = locality, data_id = id), hover_nearest = FALSE, position = "center_spoke") +
-    #     scale_color_manual("Stress regime", values =  stress_colors()) +
-    #     theme_bw() +
-    #     labs(x = "", y = "") +
-    #     coord_sf(xlim = range(stress_df_2_plot$lon), ylim = range(stress_df_2_plot$lat), expand = FALSE)
-    #
-    #
-    # girafe(ggobj = mi,
-    #        options = list(
-    #            opts_selection(
-    #                type = "single",
-    #                only_shiny = FALSE),
-    #            opts_tooltip(use_fill = TRUE),
-    #            opts_hover_inv(css = "opacity:0.1;"),
-    #            opts_hover(css = "stroke-width:2;"),
-    #            opts_zoom(max = 5)
-    #        )
-    # )
+
   })
 
 
@@ -185,20 +227,57 @@ function(input, output) {
     #     regime %in% regime_filt
     #   )
 
-    x <- stress_df_filt()
+    # x <-    brushedPoints(stress_df_filt(), input$plot1_brush)
+    # if(nrow(x) == 0) x <- stress_df_filt()
+
+    x = input$my_plot_selected
+
 
     if (is.null(por())) {
-      rose(x$azi, x$unc, main = "Shmax Orientation")
+      rose(x$azi, x$unc, main = "Shmax orientation")
     } else {
       azi_PoR <- PoR_shmax(x, por(), input$prd_type)
       if (input$prd_type == "none") {
-        rose(azi_PoR, x$unc, mtext = paste(input$plate_rot, "wrt.", input$plate_fix), main = "Shmax Orientation")
+        rose(azi_PoR, x$unc, mtext = paste(input$plate_rot, "wrt.", input$plate_fix), main = "Shmax orientation")
       } else {
-        rose(azi_PoR[, 1], x$unc, mtext = paste(input$plate_rot, "wrt.", input$plate_fix), main = "Shmax Orientation")
-        rose_line(azi_PoR$prd[1], col = "#56B4E9")
+        rose(azi_PoR[, 1], x$unc, mtext = paste(input$plate_rot, "wrt.", input$plate_fix), main = "Shmax orientation")
+        rose_line(azi_PoR$prd[1], col = "#56B4E9", radius = 1.1)
       }
     }
   })
+
+
+  # output$distance_plot<- renderPlot({
+  #   if(!is.null(por())){
+  #   x <- stress_df_filt()
+  #   x$azi_PoR <- PoR_shmax(x, por(), input$prd_type)
+  #
+  #   ggplot(x, aes(pbdist, azi_PoR, dolor = regime)) +
+  #     coord_cartesian(ylim = c(0, 180)) +
+  #     labs(x = "Distance from plate boundary (km)", y = "Azimuth in PoR (\u00B0)") +
+  #     geom_hline(yintercept = c(0, 45, 90, 135, 180), lty = 3) +
+  #     geom_pointrange(
+  #       aes(
+  #         ymin = azi_PoR - unc, ymax = azi_PoR + unc
+  #       ),
+  #       size = .25
+  #     ) +
+  #     scale_y_continuous(
+  #       breaks = seq(-180, 360, 45),
+  #       sec.axis = sec_axis(
+  #         ~.,
+  #         name = NULL,
+  #         breaks = c(0, 45, 90, 135, 180),
+  #         labels = c("Outward", "Tan (L)", "Inward", "Tan (R)", "Outward")
+  #       )
+  #     ) +
+  #     scale_alpha_discrete(name = "Quality rank", range = c(1, 0.1)) +
+  #     scale_color_manual(name = "Tectonic regime", values = stress_colors())
+  #   }
+  # })
+
+
+
 
   output$stats <- renderPrint({
     # regime_filt <- gsub("U", NA, input$regime_filt)
@@ -226,33 +305,38 @@ function(input, output) {
     #   )
 
     x <- stress_df_filt()
+    w = 1 / x$unc
+    n = nrow(x)
 
     if (is.null(por())) {
-      mean <- circular_mean(x$azi, x$unc)
-      median <- circular_median(x$azi, x$unc)
-      sd <- circular_sd(x$azi, x$unc)
+      mean <- circular_mean(x$azi, w)
+      median <- circular_median(x$azi, w)
+      sd <- circular_sd(x$azi,w)
+      ci <- confidence_angle(x$azi, w = w)
       prd <- NA
       disp <- NA
     } else {
       azi_PoR <- PoR_shmax(x, por(), input$prd_type)
       if (input$prd_type == "none") {
-        mean <- circular_mean(azi_PoR, x$unc)
-        median <- circular_median(azi_PoR, x$unc)
-        sd <- circular_sd(azi_PoR, x$unc)
+        mean <- circular_mean(azi_PoR, w)
+        median <- circular_median(azi_PoR, w)
+        sd <- circular_sd(azi_PoR, w)
+        ci <- confidence_angle(azi_PoR, w = w)
         prd <- NA
         disp <- NA
       } else {
-        mean <- circular_mean(azi_PoR[, 1], x$unc)
-        median <- circular_median(azi_PoR[, 1], x$unc)
-        sd <- circular_sd(azi_PoR[, 1], x$unc)
+        mean <- circular_mean(azi_PoR[, 1], w)
+        median <- circular_median(azi_PoR[, 1], w)
+        sd <- circular_sd(azi_PoR[, 1], w)
+        ci <- confidence_angle(azi_PoR[, 1], w = w)
         prd <- azi_PoR$prd[1]
-        disp <- circular_dispersion(azi_PoR[, 1], prd, x$unc)
+        disp <- circular_dispersion(azi_PoR[, 1], prd, w = w)
       }
     }
 
     structure(
-      c(mean, median, sd, prd, disp),
-      names = c("mean", "median", "sd", "predicted", "dispersion")
+      c(n, mean, median, sd, ci, prd, disp),
+      names = c("n", "mean", "median", "sd", "95% confidence", "predicted", "dispersion")
     )
   })
 }

@@ -32,7 +32,8 @@ wgs84_bbox <- rnaturalearth::ne_download(
 
 nuvel_pb <- sf::read_sf("E:/Global data/plate_boundaries/NUVEL-1A_plate_boundaries.shp") |>
   #smoothr::densify() |>
-  sf::st_difference(wgs84_bbox)
+  sf::st_difference(wgs84_bbox) |>
+  mutate(pair = ifelse(plateA<plateB, paste0(plateA, "-", plateB), paste0(plateB, "-", plateA)))
 #nuvel_pb <- nuvel_pb[lengths(sf::st_intersects(nuvel_pb, wgs84_bbox)) == 0,]
 #plot(nuvel_pb)
 
@@ -42,10 +43,16 @@ nuvel_pb <- sf::read_sf("E:/Global data/plate_boundaries/NUVEL-1A_plate_boundari
 
 
 morvel_pb <- sf::read_sf("E:/Global data/plate_boundaries/MORVEL56_plates_outlines.shp") |>
-  sf::st_wrap_dateline()
+  sf::st_wrap_dateline() |>
+  mutate(plateA = tolower(PlateA), plateB = tolower(PlateB),
+         pair = ifelse(plateA<plateB, paste0(plateA, "-", plateB), paste0(plateB, "-", plateA))
+  )
 
 pb2002_pb <- sf::read_sf("E:/Global data/plate_boundaries/PB2002/PB2002_boundaries.shp") |>
-  sf::st_wrap_dateline()
+  sf::st_wrap_dateline() |>
+  mutate(plateA = tolower(PlateA), plateB = tolower(PlateB),
+         pair = ifelse(plateA<plateB, paste0(plateA, "-", plateB), paste0(plateB, "-", plateA))
+  )
 
 
 list(
@@ -54,3 +61,4 @@ list(
   "pb2002" = pb2002_pb
 ) |>
   saveRDS("data/plate_boundaries.rds")
+
