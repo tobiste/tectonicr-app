@@ -2,7 +2,7 @@
 fluidPage(
 
   # App title ----
-  titlePanel("Stress analysis"),
+  titlePanel("Stress analysis using tectonicr (Stephan et al., 2023)"),
 
   # Sidebar layout with input and output definitions ----
   sidebarLayout(
@@ -73,10 +73,10 @@ fluidPage(
         inputId = "traj_filt",
         label = "Modelled stress trajectories",
         choices = list(
-          "Small circles" = "sc",
-          "Great circles" = "gc",
-          "Clockwise loxodromes" = "lc",
-          "Counterclockwise loxodromes" = "lcc"
+          "Inward displacement (small circles)" = "sc",
+          "Outward (displacement (great circles)" = "gc",
+          "Left-lateral tangential displacement (clockwise loxodromes)" = "lc",
+          "Right-lateral tangential displacement (counterclockwise loxodromes)" = "lcc"
         ),
         selected = "sc"
       ),
@@ -91,7 +91,10 @@ fluidPage(
           "Right-lateral trangential (135)" = "right"
         ),
         selected = "none"
-      )
+      ),
+
+
+      checkboxInput("por_crs", "Transform map into PoR coordinates", value = FALSE)
     ),
 
 

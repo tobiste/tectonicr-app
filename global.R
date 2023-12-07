@@ -2,6 +2,7 @@ library(shiny)
 library(dplyr)
 library(tectonicr)
 library(sf)
+library(ggplot2)
 
 
 stress_df <- readRDS("data/wsm2016.rds") |>

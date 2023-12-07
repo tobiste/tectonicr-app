@@ -1,4 +1,5 @@
 function(input, output) {
+
   output$interact_map <- renderPlot({
     regime_filt <- gsub("U", NA, input$regime_filt)
     plates2plot <- plates[[input$plate_boundary_choice]]
@@ -50,7 +51,7 @@ function(input, output) {
         regime %in% regime_filt
       )
 
-
+    if(is.null(por) | !input$por_crs){
     ggplot() +
       geom_sf(data = land) +
       geom_sf(data = plates2plot, color = "red") +
@@ -63,6 +64,10 @@ function(input, output) {
       theme_bw() +
       labs(x = "", y = "") +
       coord_sf(xlim = range(stress_df_2_filt$lon), ylim = range(stress_df_2_filt$lat), expand = FALSE)
+    } else {
+      # PoR transformation and map
+    }
+
 
     # mi <- ggplot() +
     #     geom_sf(data = land) +
@@ -121,7 +126,7 @@ function(input, output) {
         rose(azi_PoR, stress_df_filt$unc, mtext = paste(input$plate_rot, "wrt.", input$plate_fix), main = "Shmax Orientation")
       } else {
         rose(azi_PoR[, 1], stress_df_filt$unc, mtext = paste(input$plate_rot, "wrt.", input$plate_fix), main = "Shmax Orientation")
-        rose_line(azi_PoR$prd[1], col = "green")
+        rose_line(azi_PoR$prd[1], col = "dodgerblue")
       }
     }
   })
