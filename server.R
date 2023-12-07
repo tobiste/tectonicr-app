@@ -1,5 +1,4 @@
 function(input, output) {
-
   output$interact_map <- renderPlot({
     regime_filt <- gsub("U", NA, input$regime_filt)
     plates2plot <- plates[[input$plate_boundary_choice]]
@@ -18,22 +17,22 @@ function(input, output) {
 
     if (!is.null(por)) {
       if ("sc" %in% input$traj_filt) {
-        sc <- eulerpole_smallcircles(por)
+        sc <- eulerpole_smallcircles(por, n = 36)
       } else {
         sc <- NULL
       }
       if ("gc" %in% input$traj_filt) {
-        gc <- eulerpole_greatcircles(por)
+        gc <- eulerpole_greatcircles(por, n = 36)
       } else {
         gc <- NULL
       }
       if ("lc" %in% input$traj_filt) {
-        lc <- eulerpole_loxodromes(por, cw = TRUE)
+        lc <- eulerpole_loxodromes(por, cw = TRUE, n = 36)
       } else {
         lc <- NULL
       }
       if ("lcc" %in% input$traj_filt) {
-        lcc <- eulerpole_loxodromes(por, cw = FALSE)
+        lcc <- eulerpole_loxodromes(por, cw = FALSE, n = 36)
       } else {
         lcc <- NULL
       }
@@ -51,23 +50,54 @@ function(input, output) {
         regime %in% regime_filt
       )
 
-    if(is.null(por) | !input$por_crs){
-    ggplot() +
-      geom_sf(data = land) +
-      geom_sf(data = plates2plot, color = "red") +
-      geom_sf(data = lcc, color = "blue", lwd = .1, alpha = .5, lty = 4) +
-      geom_sf(data = lc, color = "blue", lwd = .1, alpha = .5, lty = 3) +
-      geom_sf(data = gc, color = "blue", lwd = .1, alpha = .5, lty = 2) +
-      geom_sf(data = sc, color = "blue", lwd = .1, alpha = .5, lty = 1) +
-      geom_spoke(data = stress_df_2_filt, aes(lon, lat, angle = angle_map, color = regime, radius = radius_map), position = "center_spoke") +
-      scale_color_manual("Stress regime", values = stress_colors()) +
-      theme_bw() +
-      labs(x = "", y = "") +
-      coord_sf(xlim = range(stress_df_2_filt$lon), ylim = range(stress_df_2_filt$lat), expand = FALSE)
+    if (is.null(por) | !input$por_crs) {
+      ggplot() +
+        geom_sf(data = land) +
+        geom_sf(data = plates2plot, color = "red") +
+        geom_sf(data = lcc, color = "#56B4E9", lwd = .5, alpha = .9, lty = 4) +
+        geom_sf(data = lc, color = "#56B4E9", lwd = .5, alpha = .9, lty = 3) +
+        geom_sf(data = gc, color = "#56B4E9", lwd = .5, alpha = .9, lty = 2) +
+        geom_sf(data = sc, color = "#56B4E9", lwd = .5, alpha = .9, lty = 1) +
+        geom_spoke(data = stress_df_2_filt, aes(lon, lat, angle = angle_map, color = regime, radius = radius_map), position = "center_spoke") +
+        scale_color_manual("Stress regime", values = stress_colors()) +
+        theme_bw() +
+        labs(x = "", y = "") +
+        coord_sf(xlim = range(stress_df_2_filt$lon), ylim = range(stress_df_2_filt$lat), expand = FALSE)
     } else {
       # PoR transformation and map
-    }
+      stress_df_2_filt_por <- PoR_coordinates(stress_df_2_filt, por)
+      stress_df_2_filt_por$azi_por <- PoR_shmax(stress_df_2_filt, por)
+      stress_df_2_filt_por$azi_por_map <- tectonicr::deg2rad(90 - stress_df_2_filt_por$azi_por)
+      stress_df_2_filt_por$radius_map <- stress_df_2_filt$radius_map
+      stress_df_2_filt_por$regime <- stress_df_2_filt$regime
 
+      # land_por <- geographical_to_PoR_sf(land, por) |>
+      #   sf::st_crop(xmin = min(stress_df_2_filt_por$lon.PoR)-2, ymin = min(stress_df_2_filt_por$lat.PoR)-2, xmax = max(stress_df_2_filt_por$lon.PoR)+2, ymax = max(stress_df_2_filt_por$lat.PoR)+2)
+
+      # plates2plot_por <- geographical_to_PoR_sf(plates2plot, por)|>
+      #   sf::st_crop(xmin = min(stress_df_2_filt_por$lon.PoR)-2, ymin = min(stress_df_2_filt_por$lat.PoR)-2, xmax = max(stress_df_2_filt_por$lon.PoR)+2, ymax = max(stress_df_2_filt_por$lat.PoR)+2)
+
+      ggplot() +
+        # geom_sf(data = land_por) +
+        # geom_sf(data = plates2plot_por, color = "red") +
+        {
+          if ("lc" %in% input$traj_filt) geom_abline(intercept = seq(-360, 360, 10), slope = rep(1, 73), color = "#56B4E9", lwd = .5, alpha = .9, lty = 4)
+        } +
+        {
+          if ("lcc" %in% input$traj_filt) geom_abline(intercept = seq(-360, 360, 10), slope = rep(-1, 73), color = "#56B4E9", lwd = .5, alpha = .9, lty = 3)
+        } +
+        {
+          if ("gc" %in% input$traj_filt) geom_vline(xintercept = seq(-180, 180, 10), lty = 2, lwd = .5, alpha = .9, color = "#56B4E9")
+        } +
+        {
+          if ("sc" %in% input$traj_filt) geom_hline(yintercept = seq(-90, 90, 10), lty = 2, lwd = .5, alpha = .9, color = "#56B4E9")
+        } +
+        geom_spoke(data = stress_df_2_filt_por, aes(lon.PoR, lat.PoR, angle = azi_por_map, color = regime, radius = radius_map), position = "center_spoke") +
+        scale_color_manual("Stress regime", values = stress_colors()) +
+        theme_bw() +
+        labs(x = "", y = "") +
+        coord_sf(xlim = range(stress_df_2_filt_por$lon.PoR), ylim = range(stress_df_2_filt_por$lat.PoR), expand = FALSE)
+    }
 
     # mi <- ggplot() +
     #     geom_sf(data = land) +
@@ -126,7 +156,7 @@ function(input, output) {
         rose(azi_PoR, stress_df_filt$unc, mtext = paste(input$plate_rot, "wrt.", input$plate_fix), main = "Shmax Orientation")
       } else {
         rose(azi_PoR[, 1], stress_df_filt$unc, mtext = paste(input$plate_rot, "wrt.", input$plate_fix), main = "Shmax Orientation")
-        rose_line(azi_PoR$prd[1], col = "dodgerblue")
+        rose_line(azi_PoR$prd[1], col = "#56B4E9")
       }
     }
   })
