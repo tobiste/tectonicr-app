@@ -1,10 +1,11 @@
 # tectonicr-app
 Graphical user interface to tectonicr
 
-```
-runApp()
-```
+# ```
+# shiny::runApp()
+# ```
 
 ```
-runGitHub( "tectonicr-app", "tobiste")
+shiny::runGitHub("tectonicr-app", "tobiste")
 ```
+
