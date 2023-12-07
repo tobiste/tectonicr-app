@@ -1,85 +1,111 @@
-library(leaflet)
-library(tectonicr)
-# Choices for drop-downs
-vars <- c(
-    "Stress regime" = "regime",
-    "Quality" = "quality",
-    "Type" = "type",
-    "Depth" = "depth",
-    "Magnitude" = "mag"
-)
-model_vars <- c(
-    "PB2002", "MORVEL56", "NUVEL1", "GSRM2"
+# Define UI for app that draws a histogram ----
+fluidPage(
+
+    # App title ----
+    titlePanel("Stress analysis"),
+
+    # Sidebar layout with input and output definitions ----
+    sidebarLayout(
+
+        # Sidebar panel for inputs ----
+        sidebarPanel(
+
+            checkboxGroupInput(inputId = "regime_filt",
+                               label = "Stress regime",
+                               choices = list("Thrust" = "T",
+                                             "Oblique reverse" = "TS",
+                                             "Strike-slip" = "S",
+                                             "Oblique normal" = "NS",
+                                             "Normal fault" = "N",
+                                             "Unknown" = "U"
+                                             ),
+                               selected = c("T", "TS", "S", "NS", "N", "U")
+                               ),
+
+            sliderInput(inputId = "quality_filt",
+                           label = "Quality (degree)",
+                        min = 0,
+                        max = 40,
+                        value = c(0, 40)
+                        ),
+
+            # Input: Slider for the maximum depth ----
+            sliderInput(inputId = "depth_filt",
+                        label = "Depth (km)",
+                        min = 0,
+                        max = 40,
+                        value = c(0, 40)
+                        ),
+
+
+            sliderInput(inputId = "lon_filt",
+                        label = "Longitude (degree)",
+                        min = -180,
+                        max = 180,
+                        value = c(-180, 180)
+            ),
+            sliderInput(inputId = "lat_filt",
+                        label = "Latitude (degree)",
+                        min = -90,
+                        max = 90,
+                        value = c(-90, 90)
+            ),
+
+        selectInput("plate_boundary_choice", ("Plate boundary model"),
+                    choices = list("PB2002" = "pb2002", "MORVEL56" = "morvel",
+                                   "NUVEL1" = "nuvel"),
+                    selected = "pb2002"
+                    ),
+
+        selectInput("motion_choice", ("Plate motion model"),
+                    choices = list("NNR-NUVEL1A" = "NNR-NUVEL1A", "NNR-MORVEL56" = "NNR-MORVEL56", "GSRM2.1" = "GSRM2.1",    "HS3-NUVEL1A" =  "HS3-NUVEL1A" , "REVEL"  = "REVEL" ,   "PB2002" =   "PB2002"  ),
+                    selected = "PB2002"
+        ),
+
+        textInput("plate_fix", ("Fixed plate"),
+                  value = "Enter plate..."
+                  ),
+
+        textInput("plate_rot", ("Rotating plate"),
+                  value = "Enter plate..."
+        ),
+
+        checkboxGroupInput(inputId = "traj_filt",
+                           label = "Modelled stress trajectories",
+                           choices = list("Small circles" = "sc",
+                                          "Great circles" = "gc",
+                                          "Clockwise loxodromes" = "lc",
+                                          "Counterclockwise loxodromes" = "lcc"
+                           ),
+                           selected = "sc"
+        ),
+
+        radioButtons(inputId = "prd_type",
+                           label = "Displacement type",
+                           choices = list(
+                               "Unknown" = "none",
+                               "Outward (0)" = "out",
+                               "Left-Lateral tangential (45)" = "left",
+                               "Inward (90)" = "in",
+                               "Right-lateral trangential (135)" = "right"
+                           ),
+                           selected = "none"
+        )
+        ),
+
+
+
+
+        # Main panel for displaying outputs ----
+        mainPanel(
+
+            # Output: Interactive map ----
+            plotOutput(outputId = "interact_map"),
+
+            plotOutput(outputId = "rose"),
+
+            verbatimTextOutput(outputId = "stats")
+
+        )
     )
-
-
-navbarPage("tectonicr", id="nav",
-
-           tabPanel("Interactive map",
-                    div(class="outer",
-
-                        tags$head(
-                            # Include our custom CSS
-                            includeCSS("styles.css"),
-                            includeScript("gomap.js")
-                        ),
-
-                        # If not using custom CSS, set height of leafletOutput to a number instead of percent
-                        leafletOutput("map", width="100%", height="100%"),
-
-                        # Shiny versions prior to 0.11 should use class = "modal" instead.
-                        absolutePanel(id = "controls", class = "panel panel-default", fixed = TRUE,
-                                      draggable = TRUE, top = 60, left = "auto", right = 20, bottom = "auto",
-                                      width = 330, height = "auto",
-
-                                      h2("ZIP explorer"),
-
-                                      selectInput("color", "Color", vars),
-                                      selectInput("size", "Size", vars, selected = "quality"),
-                                      selectInput("model", "Plate motion model", model_vars, selected = "PB2002"),
-
-                                      conditionalPanel("input.color == 'superzip' || input.size == 'superzip'",
-                                                       # Only prompt for threshold when coloring or sizing by superzip
-                                                       numericInput("threshold", "SuperZIP threshold (top n percentile)", 5)
-                                      ),
-
-                                      plotOutput("histCentile", height = 200),
-                                      plotOutput("scatterCollegeIncome", height = 250)
-                        ),
-
-                        tags$div(id="cite",
-                                 'Data compiled for ', tags$em('Coming Apart: The State of White America, 1960–2010'), ' by Charles Murray (Crown Forum, 2012).'
-                        )
-                    )
-           ),
-
-           # tabPanel("Data explorer",
-           #          fluidRow(
-           #            column(3,
-           #                   selectInput("states", "States", c("All states"="", structure(state.abb, names=state.name), "Washington, DC"="DC"), multiple=TRUE)
-           #            ),
-           #            column(3,
-           #                   conditionalPanel("input.states",
-           #                                    selectInput("cities", "Cities", c("All cities"=""), multiple=TRUE)
-           #                   )
-           #            ),
-           #            column(3,
-           #                   conditionalPanel("input.states",
-           #                                    selectInput("zipcodes", "Zipcodes", c("All zipcodes"=""), multiple=TRUE)
-           #                   )
-           #            )
-           #          ),
-           #          fluidRow(
-           #            column(1,
-           #                   numericInput("minScore", "Min score", min=0, max=100, value=0)
-           #            ),
-           #            column(1,
-           #                   numericInput("maxScore", "Max score", min=0, max=100, value=100)
-           #            )
-           #          ),
-           #          hr(),
-           #          DT::dataTableOutput("ziptable")
-           # ),
-
-           conditionalPanel("false", icon("crosshair"))
 )

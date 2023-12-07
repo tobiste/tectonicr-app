@@ -1,181 +1,198 @@
-library(leaflet)
-library(RColorBrewer)
-library(scales)
-library(lattice)
-library(dplyr)
-library(tectonicr)
+function(input, output) {
 
-# Leaflet bindings are a bit slow; for now we'll just sample to compensate
-set.seed(100)
-zipdata <- allzips[sample.int(nrow(allzips), 10000),]
-# By ordering by centile, we ensure that the (comparatively rare) SuperZIPs
-# will be drawn last and thus be easier to see
-zipdata <- zipdata[order(zipdata$centile),]
+    output$interact_map <- renderPlot({
 
-function(input, output, session) {
-
-    ## Interactive Map ###########################################
-
-    # Create the map
-    output$map <- renderLeaflet({
-        leaflet() %>%
-            addTiles() %>%
-            setView(lng = -93.85, lat = 37.45, zoom = 4)
-    })
-
-    # A reactive expression that returns the set of zips that are
-    # in bounds right now
-    zipsInBounds <- reactive({
-        if (is.null(input$map_bounds))
-            return(zipdata[FALSE,])
-        bounds <- input$map_bounds
-        latRng <- range(bounds$north, bounds$south)
-        lngRng <- range(bounds$east, bounds$west)
-
-        subset(zipdata,
-               latitude >= latRng[1] & latitude <= latRng[2] &
-                   longitude >= lngRng[1] & longitude <= lngRng[2])
-    })
-
-    # Precalculate the breaks we'll need for the two histograms
-    centileBreaks <- hist(plot = FALSE, allzips$centile, breaks = 20)$breaks
-
-    output$histCentile <- renderPlot({
-        # If no zipcodes are in view, don't plot
-        if (nrow(zipsInBounds()) == 0)
-            return(NULL)
-
-        hist(zipsInBounds()$centile,
-             breaks = centileBreaks,
-             main = "SuperZIP score (visible zips)",
-             xlab = "Percentile",
-             xlim = range(allzips$centile),
-             col = '#00DD00',
-             border = 'white')
-    })
-
-    output$scatterCollegeIncome <- renderPlot({
-        # If no zipcodes are in view, don't plot
-        if (nrow(zipsInBounds()) == 0)
-            return(NULL)
-
-        print(xyplot(income ~ college, data = zipsInBounds(), xlim = range(allzips$college), ylim = range(allzips$income)))
-    })
-
-    # This observer is responsible for maintaining the circles and legend,
-    # according to the variables the user has chosen to map to color and size.
-    observe({
-        colorBy <- input$color
-        sizeBy <- input$size
-
-        if (colorBy == "superzip") {
-            # Color and palette are treated specially in the "superzip" case, because
-            # the values are categorical instead of continuous.
-            colorData <- ifelse(zipdata$centile >= (100 - input$threshold), "yes", "no")
-            pal <- colorFactor("viridis", colorData)
-        } else {
-            colorData <- zipdata[[colorBy]]
-            pal <- colorBin("viridis", colorData, 7, pretty = FALSE)
-        }
-
-        if (sizeBy == "superzip") {
-            # Radius is treated specially in the "superzip" case.
-            radius <- ifelse(zipdata$centile >= (100 - input$threshold), 30000, 3000)
-        } else {
-            radius <- zipdata[[sizeBy]] / max(zipdata[[sizeBy]]) * 30000
-        }
-
-        leafletProxy("map", data = zipdata) %>%
-            clearShapes() %>%
-            addCircles(~longitude, ~latitude, radius=radius, layerId=~zipcode,
-                       stroke=FALSE, fillOpacity=0.4, fillColor=pal(colorData)) %>%
-            addLegend("bottomleft", pal=pal, values=colorData, title=colorBy,
-                      layerId="colorLegend")
-    })
-
-    # Show a popup at the given location
-    showZipcodePopup <- function(zipcode, lat, lng) {
-        selectedZip <- allzips[allzips$zipcode == zipcode,]
-        content <- as.character(tagList(
-            tags$h4("Score:", as.integer(selectedZip$centile)),
-            tags$strong(HTML(sprintf("%s, %s %s",
-                                     selectedZip$city.x, selectedZip$state.x, selectedZip$zipcode
-            ))), tags$br(),
-            sprintf("Median household income: %s", dollar(selectedZip$income * 1000)), tags$br(),
-            sprintf("Percent of adults with BA: %s%%", as.integer(selectedZip$college)), tags$br(),
-            sprintf("Adult population: %s", selectedZip$adultpop)
-        ))
-        leafletProxy("map") %>% addPopups(lng, lat, content, layerId = zipcode)
-    }
-
-    # When map is clicked, show a popup with city info
-    observe({
-        leafletProxy("map") %>% clearPopups()
-        event <- input$map_shape_click
-        if (is.null(event))
-            return()
-
-        isolate({
-            showZipcodePopup(event$id, event$lat, event$lng)
-        })
-    })
+        regime_filt <- gsub("U", NA, input$regime_filt)
+        plates2plot <- plates[[input$plate_boundary_choice]]
 
 
-    ## Data Explorer ###########################################
-
-    observe({
-        cities <- if (is.null(input$states)) character(0) else {
-            filter(cleantable, State %in% input$states) %>%
-                `$`('City') %>%
-                unique() %>%
-                sort()
-        }
-        stillSelected <- isolate(input$cities[input$cities %in% cities])
-        updateSelectizeInput(session, "cities", choices = cities,
-                             selected = stillSelected, server = TRUE)
-    })
-
-    observe({
-        zipcodes <- if (is.null(input$states)) character(0) else {
-            cleantable %>%
-                filter(State %in% input$states,
-                       is.null(input$cities) | City %in% input$cities) %>%
-                `$`('Zipcode') %>%
-                unique() %>%
-                sort()
-        }
-        stillSelected <- isolate(input$zipcodes[input$zipcodes %in% zipcodes])
-        updateSelectizeInput(session, "zipcodes", choices = zipcodes,
-                             selected = stillSelected, server = TRUE)
-    })
-
-    observe({
-        if (is.null(input$goto))
-            return()
-        isolate({
-            map <- leafletProxy("map")
-            map %>% clearPopups()
-            dist <- 0.5
-            zip <- input$goto$zip
-            lat <- input$goto$lat
-            lng <- input$goto$lng
-            showZipcodePopup(zip, lat, lng)
-            map %>% fitBounds(lng - dist, lat - dist, lng + dist, lat + dist)
-        })
-    })
-
-    output$ziptable <- DT::renderDataTable({
-        df <- cleantable %>%
+        model <- cpm_models |>
             filter(
-                Score >= input$minScore,
-                Score <= input$maxScore,
-                is.null(input$states) | State %in% input$states,
-                is.null(input$cities) | City %in% input$cities,
-                is.null(input$zipcodes) | Zipcode %in% input$zipcodes
-            ) %>%
-            mutate(Action = paste('<a class="go-map" href="" data-lat="', Lat, '" data-long="', Long, '" data-zip="', Zipcode, '"><i class="fa fa-crosshairs"></i></a>', sep=""))
-        action <- DT::dataTableAjax(session, df, outputId = "ziptable")
+                model == input$motion_choice
+            )
 
-        DT::datatable(df, options = list(ajax = list(url = action)), escape = FALSE)
+        if(input$plate_fix != "Enter plate..." & input$plate_rot != "Enter plate..."){
+            por <- equivalent_rotation(model, input$plate_fix, input$plate_rot)
+        } else {
+            por <- NULL
+        }
+
+        if(!is.null(por)){
+                if("sc" %in% input$traj_filt){
+                    sc = eulerpole_smallcircles(por)
+                } else {
+                    sc = NULL
+                }
+                if("gc" %in% input$traj_filt){
+                    gc = eulerpole_greatcircles(por)
+                } else {
+                    gc = NULL
+                }
+                if("lc" %in% input$traj_filt){
+                    lc = eulerpole_loxodromes(por, cw = TRUE)
+                } else {
+                    lc = NULL
+                }
+                if("lcc" %in% input$traj_filt){
+                    lcc = eulerpole_loxodromes(por, cw = FALSE)
+                } else {
+                    lcc = NULL
+                }
+            #trajectories <- rbind(sc, gc, lc, lcc)
+        } else {
+            sc <- gc <- lc <- lcc <- land[0]
+        }
+
+        stress_df_2_filt= stress_df |>
+            filter(
+                between(unc, input$quality_filt[1], input$quality_filt[2]),
+                between(depth, input$depth_filt[1], input$depth_filt[2]),
+
+                between(lat, input$lat_filt[1], input$lat_filt[2]),
+                between(lon, input$lon_filt[1], input$lon_filt[2]),
+
+                regime %in% regime_filt
+                )
+
+
+        ggplot() +
+            geom_sf(data = land) +
+            geom_sf(data = plates2plot, color = "red") +
+
+            geom_sf(data = lcc, color = "blue", lwd = .1, alpha = .5, lty = 4) +
+            geom_sf(data = lc, color = "blue", lwd = .1, alpha = .5, lty = 3) +
+            geom_sf(data = gc, color = "blue", lwd = .1, alpha = .5, lty = 2) +
+            geom_sf(data = sc, color = "blue", lwd = .1, alpha = .5, lty = 1) +
+
+            geom_spoke(data = stress_df_2_filt, aes(lon, lat, angle =angle_map, color = regime, radius = radius_map), position = "center_spoke") +
+            scale_color_manual("Stress regime", values =  stress_colors()) +
+            theme_bw() +
+            labs(x = "", y = "") +
+            coord_sf(xlim = range(stress_df_2_filt$lon), ylim = range(stress_df_2_filt$lat), expand = FALSE)
+
+        # mi <- ggplot() +
+        #     geom_sf(data = land) +
+        #     geom_sf(data = plates, color = "red") +
+        #     geom_spoke_interactive(data = stress_df_2_plot, aes(lon, lat, angle =angle_map, color = regime, radius = radius_map, tooltip = locality, data_id = id), hover_nearest = FALSE, position = "center_spoke") +
+        #     scale_color_manual("Stress regime", values =  stress_colors()) +
+        #     theme_bw() +
+        #     labs(x = "", y = "") +
+        #     coord_sf(xlim = range(stress_df_2_plot$lon), ylim = range(stress_df_2_plot$lat), expand = FALSE)
+        #
+        #
+        # girafe(ggobj = mi,
+        #        options = list(
+        #            opts_selection(
+        #                type = "single",
+        #                only_shiny = FALSE),
+        #            opts_tooltip(use_fill = TRUE),
+        #            opts_hover_inv(css = "opacity:0.1;"),
+        #            opts_hover(css = "stroke-width:2;"),
+        #            opts_zoom(max = 5)
+        #        )
+        # )
+
     })
+
+
+    output$rose <- renderPlot({
+        regime_filt <- gsub("U", NA, input$regime_filt)
+        plates2plot <- plates[[input$plate_boundary_choice]]
+
+
+        model <- cpm_models |>
+            filter(
+                model == input$motion_choice
+            )
+
+        if(input$plate_fix != "Enter plate..." & input$plate_rot != "Enter plate..."){
+            por <- equivalent_rotation(model, input$plate_fix, input$plate_rot)
+        } else {
+            por <- NULL
+        }
+
+        stress_df_filt = stress_df |>
+            filter(
+                between(unc, input$quality_filt[1], input$quality_filt[2]),
+                between(depth, input$depth_filt[1], input$depth_filt[2]),
+
+                between(lat, input$lat_filt[1], input$lat_filt[2]),
+                between(lon, input$lon_filt[1], input$lon_filt[2]),
+
+                regime %in% regime_filt
+            )
+
+        if(is.null(por)){
+            rose(stress_df_filt$azi, stress_df_filt$unc, main = "Shmax Orientation")
+        } else{
+            azi_PoR <- PoR_shmax(stress_df_filt, por, input$prd_type)
+            if(input$prd_type == "none"){
+                rose(azi_PoR, stress_df_filt$unc, mtext = paste(input$plate_rot, "wrt.", input$plate_fix), main = "Shmax Orientation")
+            } else{
+                rose(azi_PoR[, 1], stress_df_filt$unc, mtext = paste(input$plate_rot, "wrt.", input$plate_fix), main = "Shmax Orientation")
+                rose_line(azi_PoR$prd[1], col = "green")
+            }
+        }
+
+    })
+
+    output$stats <- renderPrint({
+        regime_filt <- gsub("U", NA, input$regime_filt)
+        plates2plot <- plates[[input$plate_boundary_choice]]
+
+
+        model <- cpm_models |>
+            filter(
+                model == input$motion_choice
+            )
+
+        if(input$plate_fix != "Enter plate..." & input$plate_rot != "Enter plate..."){
+            por <- equivalent_rotation(model, input$plate_fix, input$plate_rot)
+        } else {
+            por <- NULL
+        }
+
+        stress_df_filt = stress_df |>
+            filter(
+                between(unc, input$quality_filt[1], input$quality_filt[2]),
+                between(depth, input$depth_filt[1], input$depth_filt[2]),
+
+                between(lat, input$lat_filt[1], input$lat_filt[2]),
+                between(lon, input$lon_filt[1], input$lon_filt[2]),
+
+                regime %in% regime_filt
+            )
+
+        if(is.null(por)){
+            mean = circular_mean(stress_df_filt$azi, stress_df_filt$unc)
+            median = circular_median(stress_df_filt$azi, stress_df_filt$unc)
+            sd = circular_sd(stress_df_filt$azi, stress_df_filt$unc)
+            prd = NA
+            disp = NA
+        } else{
+
+            azi_PoR <- PoR_shmax(stress_df_filt, por, input$prd_type)
+            if(input$prd_type == "none"){
+                mean = circular_mean(azi_PoR, stress_df_filt$unc)
+                median = circular_median(azi_PoR, stress_df_filt$unc)
+                sd = circular_sd(azi_PoR, stress_df_filt$unc)
+                prd = NA
+                disp = NA
+            } else {
+                mean = circular_mean(azi_PoR[, 1], stress_df_filt$unc)
+                median = circular_median(azi_PoR[, 1], stress_df_filt$unc)
+                sd = circular_sd(azi_PoR[, 1], stress_df_filt$unc)
+                prd = azi_PoR$prd[1]
+                disp = circular_dispersion(azi_PoR[, 1], prd, stress_df_filt$unc)
+            }
+        }
+
+        structure(
+            c(mean, median, sd, prd, disp),
+            names = c("mean", "median", "sd", "predicted", "dispersion")
+        )
+
+
+    })
+
 }

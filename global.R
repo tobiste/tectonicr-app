@@ -1,23 +1,15 @@
+library(shiny)
 library(dplyr)
+library(tectonicr)
+library(sf)
 
-allzips <- readRDS("data/superzip.rds")
-allzips$latitude <- jitter(allzips$latitude)
-allzips$longitude <- jitter(allzips$longitude)
-allzips$college <- allzips$college * 100
-allzips$zipcode <- formatC(allzips$zipcode, width=5, format="d", flag="0")
-row.names(allzips) <- allzips$zipcode
 
-cleantable <- allzips %>%
-  select(
-    City = city.x,
-    State = state.x,
-    Zipcode = zipcode,
-    Rank = rank,
-    Score = centile,
-    Superzip = superzip,
-    Population = adultpop,
-    College = college,
-    Income = income,
-    Lat = latitude,
-    Long = longitude
+stress_df <- readRDS("data/wsm2016.rds") |>
+  dplyr::mutate(
+    angle_map = tectonicr::deg2rad(90-azi),
+    radius_map = scales::rescale(unc, from = c(0, 40), to = c(1, 0.2))
   )
+
+land = readRDS("data/rnaturalearth_land.rds")
+plates <- readRDS("data/plate_boundaries.rds")
+data("cpm_models", package = "tectonicr")
