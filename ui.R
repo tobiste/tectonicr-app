@@ -119,8 +119,8 @@ fluidPage(
 
 
       wellPanel(
-      checkboxInput("por_crs", "Transform map into PoR coordinates", value = FALSE)
-    )
+        checkboxInput("por_crs", "Transform map into PoR coordinates", value = FALSE)
+      )
     ),
 
 
@@ -129,16 +129,18 @@ fluidPage(
     # Main panel for displaying outputs ----
     mainPanel(
       # Output: Interactive map ----
-      #plotOutput(outputId = "interact_map", height = "600px", click = "plot1_click", brush = brushOpts(id = "plot1_brush")),
+      # plotOutput(outputId = "interact_map", height = "600px", click = "plot1_click", brush = brushOpts(id = "plot1_brush")),
       girafeOutput(outputId = "interact_map", height = "500px"),
-      column(8,
-             fluidRow(h3("Rose diagram")),
-             plotOutput(outputId = "rose")
+      column(
+        8,
+        fluidRow(h3("Rose diagram")),
+        plotOutput(outputId = "rose")
       ),
-      column(4,
-      # plotOutput(outputId = "distance_plot"),
-      fluidRow(h3("Statistics")),
-      verbatimTextOutput("stats")
+      column(
+        4,
+        # plotOutput(outputId = "distance_plot"),
+        fluidRow(h3("Statistics")),
+        verbatimTextOutput("stats")
       )
     )
   )

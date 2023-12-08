@@ -1,21 +1,20 @@
 function(input, output) {
-
   regime_filt <- reactive({
     gsub("U", NA, input$regime_filt)
-    })
+  })
 
-  plates2plot <-  reactive({
+  plates2plot <- reactive({
     plates[[input$plate_boundary_choice]]
   })
 
   model <- reactive({
     cpm_models |>
-    filter(
-      model == input$motion_choice
-    )
+      filter(
+        model == input$motion_choice
+      )
   })
 
-  por <-  reactive({
+  por <- reactive({
     if (input$plate_fix != "Enter plate..." & input$plate_rot != "Enter plate...") {
       equivalent_rotation(model(), input$plate_fix, input$plate_rot)
     } else {
@@ -25,43 +24,54 @@ function(input, output) {
 
 
 
-  stress_df_filt <-  reactive({
+  stress_df_filt <- reactive({
     stress_df |>
-    filter(
-      between(unc, input$quality_filt[1], input$quality_filt[2]),
-      between(depth, input$depth_filt[1], input$depth_filt[2]),
-      between(lat, input$lat_filt[1], input$lat_filt[2]),
-      between(lon, input$lon_filt[1], input$lon_filt[2]),
-      regime %in% regime_filt()
-    )
+      filter(
+        between(unc, input$quality_filt[1], input$quality_filt[2]),
+        between(depth, input$depth_filt[1], input$depth_filt[2]),
+        between(lat, input$lat_filt[1], input$lat_filt[2]),
+        between(lon, input$lon_filt[1], input$lon_filt[2]),
+        regime %in% regime_filt()
+      )
   })
 
-  trajectories <-  reactive({
-  if (!is.null(por())) {
-    if ("sc" %in% input$traj_filt) {
-      sc <- eulerpole_smallcircles(por(), n = 36) |> select() |> mutate(type = "sc")
+  trajectories <- reactive({
+    if (!is.null(por())) {
+      if ("sc" %in% input$traj_filt) {
+        sc <- eulerpole_smallcircles(por(), n = 36) |>
+          select() |>
+          mutate(type = "sc")
+      } else {
+        sc <- NULL
+      }
+      if ("gc" %in% input$traj_filt) {
+        gc <- eulerpole_greatcircles(por(), n = 36) |>
+          select() |>
+          mutate(type = "gc")
+      } else {
+        gc <- NULL
+      }
+      if ("lc" %in% input$traj_filt) {
+        lc <- eulerpole_loxodromes(por(), cw = TRUE, n = 36) |>
+          select() |>
+          mutate(type = "lc")
+      } else {
+        lc <- NULL
+      }
+      if ("lcc" %in% input$traj_filt) {
+        lcc <- eulerpole_loxodromes(por(), cw = FALSE, n = 36) |>
+          select() |>
+          mutate(type = "lcc")
+      } else {
+        lcc <- NULL
+      }
     } else {
-      sc <- NULL
+      sc <- gc <- lc <- lcc <- land[0] |>
+        sf::st_as_sf() |>
+        select() |>
+        mutate(type = "lcc")
     }
-    if ("gc" %in% input$traj_filt) {
-      gc <- eulerpole_greatcircles(por(), n = 36)|> select() |> mutate(type = "gc")
-    } else {
-      gc <- NULL
-    }
-    if ("lc" %in% input$traj_filt) {
-      lc <- eulerpole_loxodromes(por(), cw = TRUE, n = 36)|> select() |> mutate(type = "lc")
-    } else {
-      lc <- NULL
-    }
-    if ("lcc" %in% input$traj_filt) {
-      lcc <- eulerpole_loxodromes(por(), cw = FALSE, n = 36) |> select() |> mutate(type = "lcc")
-    } else {
-      lcc <- NULL
-    }
-  } else {
-    sc <- gc <- lc <- lcc <- land[0] |> sf::st_as_sf()|> select() |> mutate(type = "lcc")
-  }
-  dplyr::bind_rows(sc, gc, lc, lcc)
+    dplyr::bind_rows(sc, gc, lc, lcc)
   })
 
   # pb_distance <- reactive({
@@ -90,10 +100,6 @@ function(input, output) {
   # })
 
   output$interact_map <- renderGirafe({
-
-
-
-
     x <- stress_df_filt()
 
     if (is.null(por()) | !input$por_crs) {
@@ -112,55 +118,39 @@ function(input, output) {
       #   labs(x = "", y = "") +
       #   coord_sf(xlim = range(x$lon), ylim = range(x$lat), expand = FALSE)
 
-      mi <- ggplot(data = x, aes(lon, lat, angle = angle_map, radius = radius_map, tooltip = locality, data_id = id)) +
+      mi <- ggplot(data = x, aes(lon, lat,
+        angle = angle_map, radius = radius_map, color = regime,
+        # tooltip = locality,
+        data_id = id
+      )) +
         geom_sf(data = land, inherit.aes = FALSE, lwd = .125) +
         geom_sf(data = plates2plot(), color = "red", lwd = .4, inherit.aes = FALSE) +
         geom_sf(data = trajectories(), aes(lty = type), color = "#56B4E9", lwd = .25, alpha = .9, inherit.aes = FALSE) +
-        scale_linetype("Stress trajectory") +
+        scale_linetype_manual("Stress trajectory", values = c("sc" = 1, "gc" = 2, "lc" = 3, "lcc" = 4), labels = c("sc" = "small circles", "gc" = "great circles", "lc" = "clockwise loxodromes", "lcc" = "counterclockwise loxodromes")) +
 
-        #geom_spoke(data = stress_df, position = "center_spoke", alpha = .2, inherit.aes = TRUE) +
-        geom_spoke_interactive(aes(color = regime), size = .5, position = "center_spoke", hover_nearest = FALSE) +
-
-        scale_color_manual("Stress regime", values =  stress_colors()) +
-          theme_bw() +
-          labs(x = "", y = "") +
-        #theme(legend.position = "bottom") +
-        coord_sf(xlim = range(x$lon), ylim = range(x$lat), expand = FALSE)
-
-
-      girafe(ggobj = mi,
-             options = list(
-                 opts_selection(
-                     type = "multiple",
-                     selected = 1:nrow(x)
-                     )#,
-                 #opts_tooltip(use_fill = TRUE),
-                 #opts_hover_inv(css = "opacity:0.1;"),
-                 #opts_hover(css = "stroke-width:2;"),
-                 #opts_sizing(rescale = TRUE),
-                # opts_zoom(max = 5)
-             )
-      )
-
-
-
+        # geom_spoke(data = stress_df, position = "center_spoke", alpha = .2, inherit.aes = TRUE) +
+        geom_spoke_interactive(size = .5, position = "center_spoke", hover_nearest = FALSE) +
+        coord_sf(xlim = range(x$lon), ylim = range(x$lat), expand = FALSE) +
+        labs(x = "", y = "", title = "Geographical coordinates")
     } else {
       # PoR transformation and map
-      x_por <- PoR_coordinates(x, por())
-      x_por$azi_por <- PoR_shmax(x, por())
-      x_por$azi_por_map <- tectonicr::deg2rad(90 - x_por$azi_por)
-      x_por$radius_map <- x$radius_map
-      x_por$regime <- x$regime
+      x_por <- geographical_to_PoR_sf(x, PoR = por()) %>%
+        bind_cols(st_coordinates(.)) %>%
+        rename(lat.PoR = Y, lon.PoR = X) %>%
+        mutate(
+          azi_por = PoR_shmax(., PoR = por()),
+          azi_por_map = tectonicr::deg2rad(90 - azi_por)
+        )
 
-      # land_por <- geographical_to_PoR_sf(land, por) |>
-      #   sf::st_crop(xmin = min(stress_df_2_filt_por$lon.PoR)-2, ymin = min(stress_df_2_filt_por$lat.PoR)-2, xmax = max(stress_df_2_filt_por$lon.PoR)+2, ymax = max(stress_df_2_filt_por$lat.PoR)+2)
+      land_por <- geographical_to_PoR_sf(land, PoR = por()) #|>
+      # sf::st_crop(xmin = min(stress_df_2_filt_por$lon.PoR)-2, ymin = min(stress_df_2_filt_por$lat.PoR)-2, xmax = max(stress_df_2_filt_por$lon.PoR)+2, ymax = max(stress_df_2_filt_por$lat.PoR)+2)
 
-      # plates2plot_por <- geographical_to_PoR_sf(plates2plot(), por)|>
-      #   sf::st_crop(xmin = min(stress_df_2_filt_por$lon.PoR)-2, ymin = min(stress_df_2_filt_por$lat.PoR)-2, xmax = max(stress_df_2_filt_por$lon.PoR)+2, ymax = max(stress_df_2_filt_por$lat.PoR)+2)
+      plates2plot_por <- geographical_to_PoR_sf(plates2plot(), PoR = por()) #|>
+      # sf::st_crop(xmin = min(stress_df_2_filt_por$lon.PoR)-2, ymin = min(stress_df_2_filt_por$lat.PoR)-2, xmax = max(stress_df_2_filt_por$lon.PoR)+2, ymax = max(stress_df_2_filt_por$lat.PoR)+2)
 
-      ggplot() +
-        # geom_sf(data = land_por) +
-        # geom_sf(data = plates2plot_por(), color = "red") +
+      mi <- ggplot(data = x_por, aes(lon.PoR, lat.PoR, angle = azi_por_map, color = regime, radius = radius_map, data_id = id)) +
+        geom_sf(data = land_por, inherit.aes = FALSE, lwd = .125) +
+        geom_sf(data = plates2plot_por, color = "red", lwd = .4, inherit.aes = FALSE) +
         {
           if ("lc" %in% input$traj_filt) geom_abline(intercept = seq(-360, 360, 10), slope = rep(1, 73), color = "#56B4E9", lwd = .5, alpha = .9, lty = 3)
         } +
@@ -173,27 +163,35 @@ function(input, output) {
         {
           if ("sc" %in% input$traj_filt) geom_hline(yintercept = seq(-90, 90, 10), lty = 1, lwd = .5, alpha = .9, color = "#56B4E9")
         } +
-        geom_spoke(data = x_por, aes(lon.PoR, lat.PoR, angle = azi_por_map, color = regime, radius = radius_map), position = "center_spoke") +
-        scale_color_manual("Tectonic regime", values = stress_colors()) +
-        theme_bw() +
-        labs(x = "", y = "") +
-        #coord_sf(xlim = range(x_por$lon.PoR), ylim = range(x_por$lat.PoR), expand = FALSE)
-        coord_map(xlim = range(x_por$lon.PoR), ylim = range(x_por$lat.PoR), expand = FALSE)
+        geom_spoke_interactive(size = .5, position = "center_spoke", hover_nearest = FALSE) +
+        coord_sf(xlim = range(x_por$lon.PoR), ylim = range(x_por$lat.PoR), expand = FALSE) +
+        labs(x = "", y = "", title = "PoR coordinates")
     }
 
-
+    girafe(
+      ggobj = mi +
+        scale_color_manual("Tectonic regime", values = stress_colors()) +
+        theme_bw(),
+      options = list(
+        opts_selection(
+          type = "multiple",
+          selected = 1:nrow(x)
+        ) # ,
+        # opts_tooltip(use_fill = TRUE),
+        # opts_hover_inv(css = "opacity:0.1;"),
+        # opts_hover(css = "stroke-width:2;"),
+        # opts_sizing(rescale = TRUE),
+        # opts_zoom(max = 5)
+      )
+    )
   })
 
 
   output$rose <- renderPlot({
     req(input$interact_map_selected)
-
     selected_rows <- readr::parse_number(input$interact_map_selected)
-
     x <- stress_df_filt() |>
       slice(selected_rows)
-
-   # x = input$interact_map_selected
 
 
     if (is.null(por())) {
@@ -243,22 +241,20 @@ function(input, output) {
 
 
   output$stats <- renderPrint({
-   req(input$interact_map_selected)
-
+    req(input$interact_map_selected)
     selected_rows <- readr::parse_number(input$interact_map_selected)
-
     x <- stress_df_filt() |>
       slice(selected_rows)
 
 
-    #x <- stress_df_filt()
-    w = 1 / x$unc
-    n = nrow(x)
+    # x <- stress_df_filt()
+    w <- 1 / x$unc
+    n <- nrow(x)
 
     if (is.null(por())) {
       mean <- circular_mean(x$azi, w)
       median <- circular_median(x$azi, w)
-      sd <- circular_sd(x$azi,w)
+      sd <- circular_sd(x$azi, w)
       ci <- confidence_angle(x$azi, w = w)
       prd <- NA
       disp <- NA
