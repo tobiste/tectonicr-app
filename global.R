@@ -4,6 +4,7 @@ library(tectonicr)
 library(sf)
 library(ggplot2)
 library(ggiraph)
+#library(gt)
 
 
 stress_df <- readRDS("data/wsm2016.rds") |>

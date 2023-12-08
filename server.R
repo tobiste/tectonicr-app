@@ -36,6 +36,34 @@ function(input, output) {
     )
   })
 
+  trajectories <-  reactive({
+  if (!is.null(por())) {
+    if ("sc" %in% input$traj_filt) {
+      sc <- eulerpole_smallcircles(por(), n = 36) |> select() |> mutate(type = "sc")
+    } else {
+      sc <- NULL
+    }
+    if ("gc" %in% input$traj_filt) {
+      gc <- eulerpole_greatcircles(por(), n = 36)|> select() |> mutate(type = "gc")
+    } else {
+      gc <- NULL
+    }
+    if ("lc" %in% input$traj_filt) {
+      lc <- eulerpole_loxodromes(por(), cw = TRUE, n = 36)|> select() |> mutate(type = "lc")
+    } else {
+      lc <- NULL
+    }
+    if ("lcc" %in% input$traj_filt) {
+      lcc <- eulerpole_loxodromes(por(), cw = FALSE, n = 36) |> select() |> mutate(type = "lcc")
+    } else {
+      lcc <- NULL
+    }
+  } else {
+    sc <- gc <- lc <- lcc <- land[0] |> sf::st_as_sf()|> select() |> mutate(type = "lcc")
+  }
+  dplyr::bind_rows(sc, gc, lc, lcc)
+  })
+
   # pb_distance <- reactive({
   #   if (!is.null(por())) {
   #     pair = ifelse(input$plate_fix<input$plate_rot, paste0(input$plate_fix, "-", input$plate_rot), paste0(input$plate_rot, "-", input$plate_fix))
@@ -62,55 +90,9 @@ function(input, output) {
   # })
 
   output$interact_map <- renderGirafe({
-    #regime_filt <- gsub("U", NA, input$regime_filt)
-    #plates2plot <- plates[[input$plate_boundary_choice]]
 
 
-    # model <- cpm_models |>
-    #   filter(
-    #     model == input$motion_choice
-    #   )
 
-    # if (input$plate_fix != "Enter plate..." & input$plate_rot != "Enter plate...") {
-    #   por <- equivalent_rotation(model(), input$plate_fix, input$plate_rot)
-    # } else {
-    #   por <- NULL
-    # }
-
-    if (!is.null(por())) {
-      if ("sc" %in% input$traj_filt) {
-        sc <- eulerpole_smallcircles(por(), n = 36)
-      } else {
-        sc <- NULL
-      }
-      if ("gc" %in% input$traj_filt) {
-        gc <- eulerpole_greatcircles(por(), n = 36)
-      } else {
-        gc <- NULL
-      }
-      if ("lc" %in% input$traj_filt) {
-        lc <- eulerpole_loxodromes(por(), cw = TRUE, n = 36)
-      } else {
-        lc <- NULL
-      }
-      if ("lcc" %in% input$traj_filt) {
-        lcc <- eulerpole_loxodromes(por(), cw = FALSE, n = 36)
-      } else {
-        lcc <- NULL
-      }
-      # trajectories <- rbind(sc, gc, lc, lcc)
-    } else {
-      sc <- gc <- lc <- lcc <- land[0]
-    }
-
-    # stress_df_2_filt <- stress_df |>
-    #   filter(
-    #     between(unc, input$quality_filt[1], input$quality_filt[2]),
-    #     between(depth, input$depth_filt[1], input$depth_filt[2]),
-    #     between(lat, input$lat_filt[1], input$lat_filt[2]),
-    #     between(lon, input$lon_filt[1], input$lon_filt[2]),
-    #     regime %in% regime_filt()
-    #   )
 
     x <- stress_df_filt()
 
@@ -130,32 +112,33 @@ function(input, output) {
       #   labs(x = "", y = "") +
       #   coord_sf(xlim = range(x$lon), ylim = range(x$lat), expand = FALSE)
 
-      mi <- ggplot(data = x, aes(lon, lat, angle = angle_map, color = regime, radius = radius_map, tooltip = locality, data_id = id)) +
-        geom_sf(data = land, inherit.aes = FALSE) +
-        geom_sf(data = plates2plot(), color = "red", inherit.aes = FALSE) +
-        geom_sf(data = lcc, color = "#56B4E9", lwd = .5, alpha = .9, lty = 4, inherit.aes = FALSE) +
-        geom_sf(data = lc, color = "#56B4E9", lwd = .5, alpha = .9, lty = 3, inherit.aes = FALSE) +
-        geom_sf(data = gc, color = "#56B4E9", lwd = .5, alpha = .9, lty = 2, inherit.aes = FALSE) +
-        geom_sf(data = sc, color = "#56B4E9", lwd = .5, alpha = .9, lty = 1, inherit.aes = FALSE) +
+      mi <- ggplot(data = x, aes(lon, lat, angle = angle_map, radius = radius_map, tooltip = locality, data_id = id)) +
+        geom_sf(data = land, inherit.aes = FALSE, lwd = .125) +
+        geom_sf(data = plates2plot(), color = "red", lwd = .4, inherit.aes = FALSE) +
+        geom_sf(data = trajectories(), aes(lty = type), color = "#56B4E9", lwd = .25, alpha = .9, inherit.aes = FALSE) +
+        scale_linetype("Stress trajectory") +
 
-        geom_spoke(data = stress_df, position = "center_spoke", alpha = .2, inherit.aes = TRUE) +
-        geom_spoke_interactive(position = "center_spoke", hover_nearest = FALSE) +
+        #geom_spoke(data = stress_df, position = "center_spoke", alpha = .2, inherit.aes = TRUE) +
+        geom_spoke_interactive(aes(color = regime), size = .5, position = "center_spoke", hover_nearest = FALSE) +
 
         scale_color_manual("Stress regime", values =  stress_colors()) +
           theme_bw() +
           labs(x = "", y = "") +
+        #theme(legend.position = "bottom") +
         coord_sf(xlim = range(x$lon), ylim = range(x$lat), expand = FALSE)
 
 
       girafe(ggobj = mi,
              options = list(
                  opts_selection(
-                     type = "single",
-                     only_shiny = FALSE),
-                 opts_tooltip(use_fill = TRUE),
-                 opts_hover_inv(css = "opacity:0.1;"),
-                 opts_hover(css = "stroke-width:2;"),
-                 opts_zoom(max = 5)
+                     type = "multiple",
+                     selected = 1:nrow(x)
+                     )#,
+                 #opts_tooltip(use_fill = TRUE),
+                 #opts_hover_inv(css = "opacity:0.1;"),
+                 #opts_hover(css = "stroke-width:2;"),
+                 #opts_sizing(rescale = TRUE),
+                # opts_zoom(max = 5)
              )
       )
 
@@ -195,7 +178,7 @@ function(input, output) {
         theme_bw() +
         labs(x = "", y = "") +
         #coord_sf(xlim = range(x_por$lon.PoR), ylim = range(x_por$lat.PoR), expand = FALSE)
-        coord_equal(xlim = range(x_por$lon.PoR), ylim = range(x_por$lat.PoR), expand = FALSE)
+        coord_map(xlim = range(x_por$lon.PoR), ylim = range(x_por$lat.PoR), expand = FALSE)
     }
 
 
@@ -203,34 +186,14 @@ function(input, output) {
 
 
   output$rose <- renderPlot({
-    # regime_filt <- gsub("U", NA, input$regime_filt)
-    # plates2plot <- plates[[input$plate_boundary_choice]]
-    #
-    #
-    # model <- cpm_models |>
-    #   filter(
-    #     model == input$motion_choice
-    #   )
-    #
-    # if (input$plate_fix != "Enter plate..." & input$plate_rot != "Enter plate...") {
-    #   por <- equivalent_rotation(model, input$plate_fix, input$plate_rot)
-    # } else {
-    #   por <- NULL
-    # }
-    #
-    # stress_df_filt <- stress_df |>
-    #   filter(
-    #     between(unc, input$quality_filt[1], input$quality_filt[2]),
-    #     between(depth, input$depth_filt[1], input$depth_filt[2]),
-    #     between(lat, input$lat_filt[1], input$lat_filt[2]),
-    #     between(lon, input$lon_filt[1], input$lon_filt[2]),
-    #     regime %in% regime_filt
-    #   )
+    req(input$interact_map_selected)
 
-    # x <-    brushedPoints(stress_df_filt(), input$plot1_brush)
-    # if(nrow(x) == 0) x <- stress_df_filt()
+    selected_rows <- readr::parse_number(input$interact_map_selected)
 
-    x = input$my_plot_selected
+    x <- stress_df_filt() |>
+      slice(selected_rows)
+
+   # x = input$interact_map_selected
 
 
     if (is.null(por())) {
@@ -280,31 +243,15 @@ function(input, output) {
 
 
   output$stats <- renderPrint({
-    # regime_filt <- gsub("U", NA, input$regime_filt)
-    # plates2plot <- plates[[input$plate_boundary_choice]]
+   req(input$interact_map_selected)
+
+    selected_rows <- readr::parse_number(input$interact_map_selected)
+
+    x <- stress_df_filt() |>
+      slice(selected_rows)
 
 
-    # model <- cpm_models |>
-    #   filter(
-    #     model == input$motion_choice
-    #   )
-    #
-    # if (input$plate_fix != "Enter plate..." & input$plate_rot != "Enter plate...") {
-    #   por <- equivalent_rotation(model, input$plate_fix, input$plate_rot)
-    # } else {
-    #   por <- NULL
-    # }
-
-    # stress_df_filt <- stress_df |>
-    #   filter(
-    #     between(unc, input$quality_filt[1], input$quality_filt[2]),
-    #     between(depth, input$depth_filt[1], input$depth_filt[2]),
-    #     between(lat, input$lat_filt[1], input$lat_filt[2]),
-    #     between(lon, input$lon_filt[1], input$lon_filt[2]),
-    #     regime %in% regime_filt
-    #   )
-
-    x <- stress_df_filt()
+    #x <- stress_df_filt()
     w = 1 / x$unc
     n = nrow(x)
 
@@ -334,9 +281,9 @@ function(input, output) {
       }
     }
 
-    structure(
-      c(n, mean, median, sd, ci, prd, disp),
-      names = c("n", "mean", "median", "sd", "95% confidence", "predicted", "dispersion")
+    data.frame(
+      value = c(n, mean, median, sd, ci, prd, disp),
+      row.names = c("n", "mean", "median", "sd", "95% confidence", "predicted", "dispersion")
     )
   })
 }
