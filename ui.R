@@ -116,6 +116,7 @@ fluidPage(
         selected = "none"
       ),
 
+
       # sliderInput(
       #   inputId = "pb_dist_filt",
       #   label = "Distance to plate boundary",
@@ -123,8 +124,16 @@ fluidPage(
       #   max = 40075/2,
       #   value = c(0, 40075/2)
       # ),
-
-
+      wellPanel(
+      sliderInput(
+        inputId = "rose_bw",
+        label = "Rose diagram's bin width",
+        min = 0,
+        max = 45,
+        value = 8
+      ),
+      checkboxInput("rose_bw_opt", "Optimal bin width", value = TRUE)
+      ),
       wellPanel(
         checkboxInput("por_crs", "Transform map into PoR coordinates", value = FALSE)
       ),

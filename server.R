@@ -74,6 +74,15 @@ function(input, output) {
     dplyr::bind_rows(sc, gc, lc, lcc)
   })
 
+  rose_bw <- reactive({
+    if(input$rose_bw_opt){
+      NULL
+    } else {
+      input$rose_bw
+    }
+  })
+
+
   # pb_distance <- reactive({
   #   if (!is.null(por())) {
   #     pair = ifelse(input$plate_fix<input$plate_rot, paste0(input$plate_fix, "-", input$plate_rot), paste0(input$plate_rot, "-", input$plate_fix))
@@ -194,14 +203,16 @@ function(input, output) {
       slice(selected_rows)
 
 
+    rbw <- rose_bw()
+
     if (is.null(por())) {
       rose(x$azi, x$unc, main = "Shmax orientation")
     } else {
       azi_PoR <- PoR_shmax(x, por(), input$prd_type)
       if (input$prd_type == "none") {
-        rose(azi_PoR, x$unc, mtext = paste(input$plate_rot, "wrt.", input$plate_fix), main = "Shmax orientation")
+        rose(azi_PoR, x$unc, mtext = paste(input$plate_rot, "wrt.", input$plate_fix), main = "Shmax orientation", binwidth = rbw)
       } else {
-        rose(azi_PoR[, 1], x$unc, mtext = paste(input$plate_rot, "wrt.", input$plate_fix), main = "Shmax orientation")
+        rose(azi_PoR[, 1], x$unc, mtext = paste(input$plate_rot, "wrt.", input$plate_fix), main = "Shmax orientation", binwidth = rbw)
         rose_line(azi_PoR$prd[1], col = "#56B4E9", radius = 1.1)
       }
     }
