@@ -1,0 +1,109 @@
+PoR2Geo_azimuth         Azimuth conversion from PoR to geographical
+                        coordinate reference system
+PoR_coordinates         PoR coordinates
+PoR_crs                 PoR coordinate reference system
+PoR_map                 Plot data in PoR map
+PoR_shmax               Direction of Maximum Horizontal Stress in PoR
+                        reference system
+PoR_stress2grid         Spatial interpolation of SHmax in PoR
+                        coordinate reference system
+Q4_to_euler             Euler angle/axis from quaternion
+abs_vel                 Absolute Plate Velocity
+angle-conversion        Degrees to Radians
+angle_vectors           Angle Between Two Vectors
+axes                    Plot axes
+circle_stats            Summary Statistics of Circular Data
+circular_dispersion_boot
+                        Bootstrapped estimates for circular dispersion
+circular_sd_error       Standard Error of Mean Direction of Circular
+                        Data
+compact_grid            Compact smoothed stress field
+confidence              Confidence Interval around the Mean Direction
+                        of Circular Data
+conjugate_Q4            Conjugation of a Quaternion
+coordinate_mod          Coordinate Correction
+coordinates             Coordinate Transformations
+coordinates2            Coordinate Transformations
+cpm_models              Global model of current plate motions
+deviation_norm          Normalize Angle Between Two Directions
+deviation_shmax         Deviation of Observed and Predicted Directions
+                        of Maximum Horizontal Stress
+dispersion              Circular distance and dispersion
+dispersion_grid         Spatial analysis of dispersion
+dist_greatcircle        Distance between points
+distance_from_pb        Distance from plate boundary
+distance_mod            Normalize angular distance on a sphere distance
+earth_radius            Earth's radius in km
+equivalent_rotation     Equivalent rotation
+est.kappa               Concentration parameter of von Mises
+                        distribution
+euler_pole              Euler pole object
+euler_to_Q4             Quaternion from Euler angle-axis representation
+                        for rotations
+get_azimuth             Azimuth Between two Points
+get_distance            Helper function to Distance from plate boundary
+get_projected_pb_strike
+                        Helper function to get Distance from plate
+                        boundary
+get_relrot              Helper function to Equivalent rotation
+iceland                 Example stress data for outward-moving
+                        displaced plate boundary
+is.Q4                   Check if object is quaternion
+is.euler                Check if object is euler.pole
+kuiper_test             Kuiper Test of Circular Uniformity
+line_azimuth            Extract azimuths of line segments
+mean_resultant_length   Mean Resultant Length
+model_shmax             Theoretical Direction of Maximum Horizontal
+                        Stress in the geographical reference system.
+norm_chisq              Normalized Chi-Squared Test for Circular Data
+normalize_Q4            Quaternion normalization
+nuvel1                  NUVEL-1 Global model of current plate motions
+nuvel1_plates           Plate Boundaries on the Earth
+pb2002                  Global model of current plate motions
+plates                  Plate Boundaries on the Earth
+por_transformation_df   Conversion between spherical PoR to
+                        geographical coordinate system
+por_transformation_quat
+                        Conversion between PoR to geographical
+                        coordinate system using quaternions
+por_transformation_sf   Conversion between PoR to geographical
+                        coordinates of spatial data
+prd_err                 Error of Model's Prediction
+product_Q4              Product of quaternions
+projected_pb_strike     Strike of the plate boundary projected on data
+                        point
+quantise_wsm_quality    Numerical values to World Stress Map Quality
+                        Ranking
+quick_plot              Plotting stress analysis results
+raster_transformation   Conversion between PoR to geographical
+                        coordinate reference system of raster data
+rayleigh_test           Rayleigh Test of Circular Uniformity
+relative_rotation       Relative rotation between two rotations
+roll_circstats          Apply Rolling Functions using Circular
+                        Statistics
+rolling_test            Apply Rolling Functions using Circular
+                        Statistical Tests for Uniformity
+rolling_test_dist       Apply Rolling Functions using Circular
+                        Statistics
+rose                    Rose Diagram
+rose_geom               Lines and fans in rose diagram
+rose_stats              Show Average Direction and Spread in Rose
+                        Diagram
+rotation_Q4             Rotation of a vector by a quaternion
+san_andreas             Example stress data for tangentially displaced
+                        plate boundary
+spec_atan               Quadrant-specific inverse of the tangent
+spherical_angle         Angle along great circle on spherical surface
+stress2grid             Spatial interpolation of SHmax
+stress_analysis         Quick analysis of a stress data set
+stress_colors           Color palette for stress regime
+stress_paths            Theoretical Plate Tectonic Stress Paths
+superimposed_shmax      SHmax direction resulting from multiple plate
+                        boundaries
+tectonicr.colors        Colors for input variables
+tibet                   Example stress data for inward-moving displaced
+                        plate boundary
+vcross                  Vector cross product
+vonmises                The von Mises Distribution
+watson_test             Watson's U^2 Test of Circular Uniformity
+weighted_rayleigh       Weighted Goodness-of-fit Test for Circular Data

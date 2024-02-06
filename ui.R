@@ -2,7 +2,9 @@
 fluidPage(
 
   # App title ----
-  titlePanel("Stress analysis using tectonicr (Stephan et al., 2023)"),
+  headerPanel(
+    HTML("<p>Stress analysis using <b>tectonicr</b><br></p>")
+    ),
 
   # Sidebar layout with input and output definitions ----
   sidebarLayout(
@@ -75,16 +77,21 @@ fluidPage(
         column(
           5,
           textInput("plate_rot", ("Rotating plate"),
-            value = "Enter plate..."
+            value = ""
           )
         ),
         column(
           5,
           textInput("plate_fix", ("Fixed plate"),
-            value = "Enter plate..."
+            value = ""
           )
         )
       ),
+
+      #p("Abbreviations: https://www.unavco.org/software/geodetic-utilities/plate-motion-calculator/plate-motion-calculator.html"),
+      p(tags$a(href="https://www.unavco.org/software/geodetic-utilities/plate-motion-calculator/plate-motion-calculator.html", "Plate abbreviations")),
+
+
       checkboxGroupInput(
         inputId = "traj_filt",
         label = "Modelled stress trajectories",
@@ -120,7 +127,17 @@ fluidPage(
 
       wellPanel(
         checkboxInput("por_crs", "Transform map into PoR coordinates", value = FALSE)
+      ),
+
+      hr(),
+      wellPanel(
+      #html("Referece:<br>Stephan, T., Enkelmann, E., & Kroner, U. (2023). Analyzing the horizontal orientation of the crustal stress adjacent to plate boundaries. Scientific Reports, 13(1), 15590. https://doi.org/10.1038/s41598-023-42433-2")
+      HTML("<p>Reference:<br>
+           Stephan, T., Enkelmann, E., & Kroner, U. (2023).
+           Analyzing the horizontal orientation of the crustal stress adjacent to plate boundaries. <i>Scientific Reports</i>,
+           13(1), 15590. <a href='https://doi.org/10.1038/s41598-023-42433-2'>https://doi.org/10.1038/s41598-023-42433-2</a></p>"
       )
+    ),
     ),
 
 

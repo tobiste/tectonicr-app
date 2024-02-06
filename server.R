@@ -4,19 +4,19 @@ function(input, output) {
   })
 
   plates2plot <- reactive({
-    plates[[input$plate_boundary_choice]]
+    plate_boundaries[[input$plate_boundary_choice]]
   })
 
   model <- reactive({
     cpm_models |>
-      filter(
+      dplyr::filter(
         model == input$motion_choice
       )
   })
 
   por <- reactive({
-    if (input$plate_fix != "Enter plate..." & input$plate_rot != "Enter plate...") {
-      equivalent_rotation(model(), input$plate_fix, input$plate_rot)
+    if (input$plate_fix != "" & input$plate_rot != "") {
+      equivalent_rotation(model(), tolower(input$plate_fix), tolower(input$plate_rot))
     } else {
       NULL
     }
@@ -26,7 +26,7 @@ function(input, output) {
 
   stress_df_filt <- reactive({
     stress_df |>
-      filter(
+      dplyr::filter(
         between(unc, input$quality_filt[1], input$quality_filt[2]),
         between(depth, input$depth_filt[1], input$depth_filt[2]),
         between(lat, input$lat_filt[1], input$lat_filt[2]),

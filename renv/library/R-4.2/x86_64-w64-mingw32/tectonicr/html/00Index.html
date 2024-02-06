@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html>
+<head><title>R: Analyzing the Orientation of Maximum Horizontal Stress</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+<link rel="stylesheet" type="text/css" href="R.css" />
+</head><body><div class="container">
+<h1> Analyzing the Orientation of Maximum Horizontal Stress
+<img class="toplogo" src="../../../doc/html/Rlogo.svg" alt="[R logo]" />
+</h1>
+<hr/>
+<div style="text-align: center;">
+<a href="../../../doc/html/packages.html"><img class="arrow" src="../../../doc/html/left.jpg" alt="[Up]" /></a>
+<a href="../../../doc/html/index.html"><img class="arrow" src="../../../doc/html/up.jpg" alt="[Top]" /></a>
+</div><h2>Documentation for package &lsquo;tectonicr&rsquo; version 0.2.96</h2>
+
+<ul><li><a href="../DESCRIPTION">DESCRIPTION file</a>.</li>
+<li><a href="../NEWS">Package NEWS</a>.</li>
+</ul>
+
+<h2>Help Pages</h2>
+
+
+<p style="text-align: center;">
+<a href="#A">A</a>
+<a href="#C">C</a>
+<a href="#D">D</a>
+<a href="#E">E</a>
+<a href="#G">G</a>
+<a href="#H">H</a>
+<a href="#I">I</a>
+<a href="#K">K</a>
+<a href="#L">L</a>
+<a href="#M">M</a>
+<a href="#N">N</a>
+<a href="#O">O</a>
+<a href="#P">P</a>
+<a href="#Q">Q</a>
+<a href="#R">R</a>
+<a href="#S">S</a>
+<a href="#T">T</a>
+<a href="#V">V</a>
+<a href="#W">W</a>
+</p>
+
+
+<h2><a id="A">-- A --</a></h2>
+
+<table style="width: 100%;">
+<tr><td style="width: 25%;"><a href="abs_vel.html">abs_vel</a></td>
+<td>Absolute Plate Velocity</td></tr>
+<tr><td style="width: 25%;"><a href="angle-conversion.html">angle-conversion</a></td>
+<td>Degrees to Radians</td></tr>
+<tr><td style="width: 25%;"><a href="angle_vectors.html">angle_vectors</a></td>
+<td>Angle Between Two Vectors</td></tr>
+<tr><td style="width: 25%;"><a href="spec_atan.html">atan2d_spec</a></td>
+<td>Quadrant-specific inverse of the tangent</td></tr>
+<tr><td style="width: 25%;"><a href="spec_atan.html">atan2_spec</a></td>
+<td>Quadrant-specific inverse of the tangent</td></tr>
+<tr><td style="width: 25%;"><a href="axes.html">axes</a></td>
+<td>Plot axes</td></tr>
+</table>
+
+<h2><a id="C">-- C --</a></h2>
+
+<table style="width: 100%;">
+<tr><td style="width: 25%;"><a href="coordinates.html">cartesian_to_geographical</a></td>
+<td>Coordinate Transformations</td></tr>
+<tr><td style="width: 25%;"><a href="coordinates2.html">cartesian_to_spherical</a></td>
+<td>Coordinate Transformations</td></tr>
+<tr><td style="width: 25%;"><a href="circle_stats.html">circle_stats</a></td>
+<td>Summary Statistics of Circular Data</td></tr>
+<tr><td style="width: 25%;"><a href="dispersion.html">circular_dispersion</a></td>
+<td>Circular distance and dispersion</td></tr>
+<tr><td style="width: 25%;"><a href="circular_dispersion_boot.html">circular_dispersion_boot</a></td>
+<td>Bootstrapped estimates for circular dispersion</td></tr>
+<tr><td style="width: 25%;"><a href="dispersion.html">circular_distance</a></td>
+<td>Circular distance and dispersion</td></tr>
+<tr><td style="width: 25%;"><a href="circle_stats.html">circular_IQR</a></td>
+<td>Summary Statistics of Circular Data</td></tr>
+<tr><td style="width: 25%;"><a href="circle_stats.html">circular_mean</a></td>
+<td>Summary Statistics of Circular Data</td></tr>
+<tr><td style="width: 25%;"><a href="circle_stats.html">circular_median</a></td>
+<td>Summary Statistics of Circular Data</td></tr>
+<tr><td style="width: 25%;"><a href="circle_stats.html">circular_quantiles</a></td>
+<td>Summary Statistics of Circular Data</td></tr>
+<tr><td style="width: 25%;"><a href="circle_stats.html">circular_sd</a></td>
+<td>Summary Statistics of Circular Data</td></tr>
+<tr><td style="width: 25%;"><a href="circular_sd_error.html">circular_sd_error</a></td>
+<td>Standard Error of Mean Direction of Circular Data</td></tr>
+<tr><td style="width: 25%;"><a href="circle_stats.html">circular_var</a></td>
+<td>Summary Statistics of Circular Data</td></tr>
+<tr><td style="width: 25%;"><a href="compact_grid.html">compact_grid</a></td>
+<td>Compact smoothed stress field</td></tr>
+<tr><td style="width: 25%;"><a href="confidence.html">confidence</a></td>
+<td>Confidence Interval around the Mean Direction of Circular Data</td></tr>
+<tr><td style="width: 25%;"><a href="confidence.html">confidence_angle</a></td>
+<td>Confidence Interval around the Mean Direction of Circular Data</td></tr>
+<tr><td style="width: 25%;"><a href="confidence.html">confidence_interval</a></td>
+<td>Confidence Interval around the Mean Direction of Circular Data</td></tr>
+<tr><td style="width: 25%;"><a href="conjugate_Q4.html">conjugate_Q4</a></td>
+<td>Conjugation of a Quaternion</td></tr>
+<tr><td style="width: 25%;"><a href="coordinates.html">coordinates</a></td>
+<td>Coordinate Transformations</td></tr>
+<tr><td style="width: 25%;"><a href="coordinates2.html">coordinates2</a></td>
+<td>Coordinate Transformations</td></tr>
+<tr><td style="width: 25%;"><a href="coordinate_mod.html">coordinate_mod</a></td>
+<td>Coordinate Correction</td></tr>
+<tr><td style="width: 25%;"><a href="cpm_models.html">cpm_models</a></td>
+<td>Global model of current plate motions</td></tr>
+</table>
+
+<h2><a id="D">-- D --</a></h2>
+
+<table style="width: 100%;">
+<tr><td style="width: 25%;"><a href="angle-conversion.html">deg2rad</a></td>
+<td>Degrees to Radians</td></tr>
+<tr><td style="width: 25%;"><a href="deviation_norm.html">deviation_norm</a></td>
+<td>Normalize Angle Between Two Directions</td></tr>
+<tr><td style="width: 25%;"><a href="deviation_shmax.html">deviation_shmax</a></td>
+<td>Deviation of Observed and Predicted Directions of Maximum Horizontal Stress</td></tr>
+<tr><td style="width: 25%;"><a href="dispersion.html">dispersion</a></td>
+<td>Circular distance and dispersion</td></tr>
+<tr><td style="width: 25%;"><a href="dispersion_grid.html">dispersion_grid</a></td>
+<td>Spatial analysis of dispersion</td></tr>
+<tr><td style="width: 25%;"><a href="distance_from_pb.html">distance_from_pb</a></td>
+<td>Distance from plate boundary</td></tr>
+<tr><td style="width: 25%;"><a href="distance_mod.html">distance_mod</a></td>
+<td>Normalize angular distance on a sphere distance</td></tr>
+<tr><td style="width: 25%;"><a href="rolling_test_dist.html">distroll_circstats</a></td>
+<td>Apply Rolling Functions using Circular Statistics</td></tr>
+<tr><td style="width: 25%;"><a href="rolling_test_dist.html">distroll_confidence</a></td>
+<td>Apply Rolling Functions using Circular Statistics</td></tr>
+<tr><td style="width: 25%;"><a href="rolling_test_dist.html">distroll_dispersion</a></td>
+<td>Apply Rolling Functions using Circular Statistics</td></tr>
+<tr><td style="width: 25%;"><a href="rolling_test_dist.html">distroll_dispersion_sde</a></td>
+<td>Apply Rolling Functions using Circular Statistics</td></tr>
+<tr><td style="width: 25%;"><a href="dist_greatcircle.html">dist_greatcircle</a></td>
+<td>Distance between points</td></tr>
+<tr><td style="width: 25%;"><a href="vonmises.html">dvm</a></td>
+<td>The von Mises Distribution</td></tr>
+</table>
+
+<h2><a id="E">-- E --</a></h2>
+
+<table style="width: 100%;">
+<tr><td style="width: 25%;"><a href="earth_radius.html">earth_radius</a></td>
+<td>Earth's radius in km</td></tr>
+<tr><td style="width: 25%;"><a href="equivalent_rotation.html">equivalent_rotation</a></td>
+<td>Equivalent rotation</td></tr>
+<tr><td style="width: 25%;"><a href="est.kappa.html">est.kappa</a></td>
+<td>Concentration parameter of von Mises distribution</td></tr>
+<tr><td style="width: 25%;"><a href="stress_paths.html">eulerpole_greatcircles</a></td>
+<td>Theoretical Plate Tectonic Stress Paths</td></tr>
+<tr><td style="width: 25%;"><a href="stress_paths.html">eulerpole_loxodromes</a></td>
+<td>Theoretical Plate Tectonic Stress Paths</td></tr>
+<tr><td style="width: 25%;"><a href="stress_paths.html">eulerpole_paths</a></td>
+<td>Theoretical Plate Tectonic Stress Paths</td></tr>
+<tr><td style="width: 25%;"><a href="stress_paths.html">eulerpole_smallcircles</a></td>
+<td>Theoretical Plate Tectonic Stress Paths</td></tr>
+<tr><td style="width: 25%;"><a href="euler_pole.html">euler_pole</a></td>
+<td>Euler pole object</td></tr>
+<tr><td style="width: 25%;"><a href="euler_to_Q4.html">euler_to_Q4</a></td>
+<td>Quaternion from Euler angle-axis representation for rotations</td></tr>
+</table>
+
+<h2><a id="G">-- G --</a></h2>
+
+<table style="width: 100%;">
+<tr><td style="width: 25%;"><a href="coordinates.html">geographical_to_cartesian</a></td>
+<td>Coordinate Transformations</td></tr>
+<tr><td style="width: 25%;"><a href="por_transformation_df.html">geographical_to_PoR</a></td>
+<td>Conversion between spherical PoR to geographical coordinate system</td></tr>
+<tr><td style="width: 25%;"><a href="por_transformation_quat.html">geographical_to_PoR_quat</a></td>
+<td>Conversion between PoR to geographical coordinate system using quaternions</td></tr>
+<tr><td style="width: 25%;"><a href="raster_transformation.html">geographical_to_PoR_raster</a></td>
+<td>Conversion between PoR to geographical coordinate reference system of raster data</td></tr>
+<tr><td style="width: 25%;"><a href="por_transformation_sf.html">geographical_to_PoR_sf</a></td>
+<td>Conversion between PoR to geographical coordinates of spatial data</td></tr>
+<tr><td style="width: 25%;"><a href="coordinates.html">geographical_to_spherical</a></td>
+<td>Coordinate Transformations</td></tr>
+<tr><td style="width: 25%;"><a href="get_azimuth.html">get_azimuth</a></td>
+<td>Azimuth Between two Points</td></tr>
+<tr><td style="width: 25%;"><a href="get_distance.html">get_distance</a></td>
+<td>Helper function to Distance from plate boundary</td></tr>
+<tr><td style="width: 25%;"><a href="get_projected_pb_strike.html">get_projected_pb_strike</a></td>
+<td>Helper function to get Distance from plate boundary</td></tr>
+<tr><td style="width: 25%;"><a href="get_relrot.html">get_relrot</a></td>
+<td>Helper function to Equivalent rotation</td></tr>
+</table>
+
+<h2><a id="H">-- H --</a></h2>
+
+<table style="width: 100%;">
+<tr><td style="width: 25%;"><a href="spherical_angle.html">haversine</a></td>
+<td>Angle along great circle on spherical surface</td></tr>
+</table>
+
+<h2><a id="I">-- I --</a></h2>
+
+<table style="width: 100%;">
+<tr><td style="width: 25%;"><a href="iceland.html">iceland</a></td>
+<td>Example stress data for outward-moving displaced plate boundary</td></tr>
+<tr><td style="width: 25%;"><a href="is.euler.html">is.euler</a></td>
+<td>Check if object is euler.pole</td></tr>
+<tr><td style="width: 25%;"><a href="is.Q4.html">is.Q4</a></td>
+<td>Check if object is quaternion</td></tr>
+</table>
+
+<h2><a id="K">-- K --</a></h2>
+
+<table style="width: 100%;">
+<tr><td style="width: 25%;"><a href="kuiper_test.html">kuiper_test</a></td>
+<td>Kuiper Test of Circular Uniformity</td></tr>
+</table>
+
+<h2><a id="L">-- L --</a></h2>
+
+<table style="width: 100%;">
+<tr><td style="width: 25%;"><a href="coordinate_mod.html">latitude_modulo</a></td>
+<td>Coordinate Correction</td></tr>
+<tr><td style="width: 25%;"><a href="line_azimuth.html">lines_azimuths</a></td>
+<td>Extract azimuths of line segments</td></tr>
+<tr><td style="width: 25%;"><a href="line_azimuth.html">line_azimuth</a></td>
+<td>Extract azimuths of line segments</td></tr>
+<tr><td style="width: 25%;"><a href="coordinate_mod.html">longitude_modulo</a></td>
+<td>Coordinate Correction</td></tr>
+</table>
+
+<h2><a id="M">-- M --</a></h2>
+
+<table style="width: 100%;">
+<tr><td style="width: 25%;"><a href="mean_resultant_length.html">mean_resultant_length</a></td>
+<td>Mean Resultant Length</td></tr>
+<tr><td style="width: 25%;"><a href="model_shmax.html">model_shmax</a></td>
+<td>Theoretical Direction of Maximum Horizontal Stress in the geographical reference system.</td></tr>
+</table>
+
+<h2><a id="N">-- N --</a></h2>
+
+<table style="width: 100%;">
+<tr><td style="width: 25%;"><a href="normalize_Q4.html">normalize_Q4</a></td>
+<td>Quaternion normalization</td></tr>
+<tr><td style="width: 25%;"><a href="norm_chisq.html">norm_chisq</a></td>
+<td>Normalized Chi-Squared Test for Circular Data</td></tr>
+<tr><td style="width: 25%;"><a href="nuvel1.html">nuvel1</a></td>
+<td>NUVEL-1 Global model of current plate motions</td></tr>
+<tr><td style="width: 25%;"><a href="nuvel1_plates.html">nuvel1_plates</a></td>
+<td>Plate Boundaries on the Earth</td></tr>
+</table>
+
+<h2><a id="O">-- O --</a></h2>
+
+<table style="width: 100%;">
+<tr><td style="width: 25%;"><a href="spherical_angle.html">orthodrome</a></td>
+<td>Angle along great circle on spherical surface</td></tr>
+</table>
+
+<h2><a id="P">-- P --</a></h2>
+
+<table style="width: 100%;">
+<tr><td style="width: 25%;"><a href="pb2002.html">pb2002</a></td>
+<td>Global model of current plate motions</td></tr>
+<tr><td style="width: 25%;"><a href="plates.html">plates</a></td>
+<td>Plate Boundaries on the Earth</td></tr>
+<tr><td style="width: 25%;"><a href="PoR2Geo_azimuth.html">PoR2Geo_azimuth</a></td>
+<td>Azimuth conversion from PoR to geographical coordinate reference system</td></tr>
+<tr><td style="width: 25%;"><a href="PoR_coordinates.html">PoR_coordinates</a></td>
+<td>PoR coordinates</td></tr>
+<tr><td style="width: 25%;"><a href="PoR_crs.html">PoR_crs</a></td>
+<td>PoR coordinate reference system</td></tr>
+<tr><td style="width: 25%;"><a href="PoR_map.html">PoR_map</a></td>
+<td>Plot data in PoR map</td></tr>
+<tr><td style="width: 25%;"><a href="PoR_shmax.html">PoR_shmax</a></td>
+<td>Direction of Maximum Horizontal Stress in PoR reference system</td></tr>
+<tr><td style="width: 25%;"><a href="PoR_stress2grid.html">PoR_stress2grid</a></td>
+<td>Spatial interpolation of SHmax in PoR coordinate reference system</td></tr>
+<tr><td style="width: 25%;"><a href="por_transformation_df.html">PoR_to_geographical</a></td>
+<td>Conversion between spherical PoR to geographical coordinate system</td></tr>
+<tr><td style="width: 25%;"><a href="por_transformation_quat.html">PoR_to_geographical_quat</a></td>
+<td>Conversion between PoR to geographical coordinate system using quaternions</td></tr>
+<tr><td style="width: 25%;"><a href="raster_transformation.html">PoR_to_geographical_raster</a></td>
+<td>Conversion between PoR to geographical coordinate reference system of raster data</td></tr>
+<tr><td style="width: 25%;"><a href="por_transformation_sf.html">PoR_to_geographical_sf</a></td>
+<td>Conversion between PoR to geographical coordinates of spatial data</td></tr>
+<tr><td style="width: 25%;"><a href="por_transformation_df.html">por_transformation_df</a></td>
+<td>Conversion between spherical PoR to geographical coordinate system</td></tr>
+<tr><td style="width: 25%;"><a href="por_transformation_quat.html">por_transformation_quat</a></td>
+<td>Conversion between PoR to geographical coordinate system using quaternions</td></tr>
+<tr><td style="width: 25%;"><a href="por_transformation_sf.html">por_transformation_sf</a></td>
+<td>Conversion between PoR to geographical coordinates of spatial data</td></tr>
+<tr><td style="width: 25%;"><a href="prd_err.html">prd_err</a></td>
+<td>Error of Model's Prediction</td></tr>
+<tr><td style="width: 25%;"><a href="product_Q4.html">product_Q4</a></td>
+<td>Product of quaternions</td></tr>
+<tr><td style="width: 25%;"><a href="projected_pb_strike.html">projected_pb_strike</a></td>
+<td>Strike of the plate boundary projected on data point</td></tr>
+<tr><td style="width: 25%;"><a href="vonmises.html">pvm</a></td>
+<td>The von Mises Distribution</td></tr>
+</table>
+
+<h2><a id="Q">-- Q --</a></h2>
+
+<table style="width: 100%;">
+<tr><td style="width: 25%;"><a href="Q4_to_euler.html">Q4_to_euler</a></td>
+<td>Euler angle/axis from quaternion</td></tr>
+<tr><td style="width: 25%;"><a href="quantise_wsm_quality.html">quantise_wsm_quality</a></td>
+<td>Numerical values to World Stress Map Quality Ranking</td></tr>
+<tr><td style="width: 25%;"><a href="relative_rotation.html">quaternion</a></td>
+<td>Relative rotation between two rotations</td></tr>
+<tr><td style="width: 25%;"><a href="quick_plot.html">quick_plot</a></td>
+<td>Plotting stress analysis results</td></tr>
+</table>
+
+<h2><a id="R">-- R --</a></h2>
+
+<table style="width: 100%;">
+<tr><td style="width: 25%;"><a href="angle-conversion.html">rad2deg</a></td>
+<td>Degrees to Radians</td></tr>
+<tr><td style="width: 25%;"><a href="raster_transformation.html">raster_transformation</a></td>
+<td>Conversion between PoR to geographical coordinate reference system of raster data</td></tr>
+<tr><td style="width: 25%;"><a href="rayleigh_test.html">rayleigh_test</a></td>
+<td>Rayleigh Test of Circular Uniformity</td></tr>
+<tr><td style="width: 25%;"><a href="relative_rotation.html">relative_rotation</a></td>
+<td>Relative rotation between two rotations</td></tr>
+<tr><td style="width: 25%;"><a href="rolling_test.html">rolling_test</a></td>
+<td>Apply Rolling Functions using Circular Statistical Tests for Uniformity</td></tr>
+<tr><td style="width: 25%;"><a href="rolling_test_dist.html">rolling_test_dist</a></td>
+<td>Apply Rolling Functions using Circular Statistics</td></tr>
+<tr><td style="width: 25%;"><a href="roll_circstats.html">roll_circstats</a></td>
+<td>Apply Rolling Functions using Circular Statistics</td></tr>
+<tr><td style="width: 25%;"><a href="rolling_test.html">roll_confidence</a></td>
+<td>Apply Rolling Functions using Circular Statistical Tests for Uniformity</td></tr>
+<tr><td style="width: 25%;"><a href="rolling_test.html">roll_dispersion</a></td>
+<td>Apply Rolling Functions using Circular Statistical Tests for Uniformity</td></tr>
+<tr><td style="width: 25%;"><a href="rolling_test.html">roll_dispersion_CI</a></td>
+<td>Apply Rolling Functions using Circular Statistical Tests for Uniformity</td></tr>
+<tr><td style="width: 25%;"><a href="rolling_test.html">roll_dispersion_sde</a></td>
+<td>Apply Rolling Functions using Circular Statistical Tests for Uniformity</td></tr>
+<tr><td style="width: 25%;"><a href="rolling_test.html">roll_normchisq</a></td>
+<td>Apply Rolling Functions using Circular Statistical Tests for Uniformity</td></tr>
+<tr><td style="width: 25%;"><a href="rolling_test.html">roll_rayleigh</a></td>
+<td>Apply Rolling Functions using Circular Statistical Tests for Uniformity</td></tr>
+<tr><td style="width: 25%;"><a href="rose.html">rose</a></td>
+<td>Rose Diagram</td></tr>
+<tr><td style="width: 25%;"><a href="rose_geom.html">rose_fan</a></td>
+<td>Lines and fans in rose diagram</td></tr>
+<tr><td style="width: 25%;"><a href="rose_geom.html">rose_geom</a></td>
+<td>Lines and fans in rose diagram</td></tr>
+<tr><td style="width: 25%;"><a href="rose_geom.html">rose_line</a></td>
+<td>Lines and fans in rose diagram</td></tr>
+<tr><td style="width: 25%;"><a href="rose_stats.html">rose_stats</a></td>
+<td>Show Average Direction and Spread in Rose Diagram</td></tr>
+<tr><td style="width: 25%;"><a href="relative_rotation.html">rotation</a></td>
+<td>Relative rotation between two rotations</td></tr>
+<tr><td style="width: 25%;"><a href="rotation_Q4.html">rotation_Q4</a></td>
+<td>Rotation of a vector by a quaternion</td></tr>
+<tr><td style="width: 25%;"><a href="vonmises.html">rvm</a></td>
+<td>The von Mises Distribution</td></tr>
+</table>
+
+<h2><a id="S">-- S --</a></h2>
+
+<table style="width: 100%;">
+<tr><td style="width: 25%;"><a href="san_andreas.html">san_andreas</a></td>
+<td>Example stress data for tangentially displaced plate boundary</td></tr>
+<tr><td style="width: 25%;"><a href="spec_atan.html">spec_atan</a></td>
+<td>Quadrant-specific inverse of the tangent</td></tr>
+<tr><td style="width: 25%;"><a href="spherical_angle.html">spherical_angle</a></td>
+<td>Angle along great circle on spherical surface</td></tr>
+<tr><td style="width: 25%;"><a href="coordinates2.html">spherical_to_cartesian</a></td>
+<td>Coordinate Transformations</td></tr>
+<tr><td style="width: 25%;"><a href="coordinates2.html">spherical_to_geographical</a></td>
+<td>Coordinate Transformations</td></tr>
+<tr><td style="width: 25%;"><a href="stress2grid.html">stress2grid</a></td>
+<td>Spatial interpolation of SHmax</td></tr>
+<tr><td style="width: 25%;"><a href="stress_analysis.html">stress_analysis</a></td>
+<td>Quick analysis of a stress data set</td></tr>
+<tr><td style="width: 25%;"><a href="stress_colors.html">stress_colors</a></td>
+<td>Color palette for stress regime</td></tr>
+<tr><td style="width: 25%;"><a href="stress_paths.html">stress_paths</a></td>
+<td>Theoretical Plate Tectonic Stress Paths</td></tr>
+<tr><td style="width: 25%;"><a href="superimposed_shmax.html">superimposed_shmax</a></td>
+<td>SHmax direction resulting from multiple plate boundaries</td></tr>
+</table>
+
+<h2><a id="T">-- T --</a></h2>
+
+<table style="width: 100%;">
+<tr><td style="width: 25%;"><a href="tectonicr.colors.html">tectonicr.colors</a></td>
+<td>Colors for input variables</td></tr>
+<tr><td style="width: 25%;"><a href="tibet.html">tibet</a></td>
+<td>Example stress data for inward-moving displaced plate boundary</td></tr>
+</table>
+
+<h2><a id="V">-- V --</a></h2>
+
+<table style="width: 100%;">
+<tr><td style="width: 25%;"><a href="vcross.html">vcross</a></td>
+<td>Vector cross product</td></tr>
+<tr><td style="width: 25%;"><a href="spherical_angle.html">vincenty</a></td>
+<td>Angle along great circle on spherical surface</td></tr>
+<tr><td style="width: 25%;"><a href="vonmises.html">vonmises</a></td>
+<td>The von Mises Distribution</td></tr>
+</table>
+
+<h2><a id="W">-- W --</a></h2>
+
+<table style="width: 100%;">
+<tr><td style="width: 25%;"><a href="watson_test.html">watson_test</a></td>
+<td>Watson's U^2 Test of Circular Uniformity</td></tr>
+<tr><td style="width: 25%;"><a href="weighted_rayleigh.html">weighted_rayleigh</a></td>
+<td>Weighted Goodness-of-fit Test for Circular Data</td></tr>
+</table>
+</div></body></html>
