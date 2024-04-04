@@ -87,9 +87,25 @@ fluidPage(
           )
         )
       ),
-
       #p("Abbreviations: https://www.unavco.org/software/geodetic-utilities/plate-motion-calculator/plate-motion-calculator.html"),
       p(tags$a(href="https://www.unavco.org/software/geodetic-utilities/plate-motion-calculator/plate-motion-calculator.html", "Plate abbreviations")),
+
+
+
+      h5("Manual Euler pole"),
+      fluidRow(
+        column(
+          5,
+          numericInput("my_elat", 'Lat.:', value = NA),
+        ),
+        column(
+          5,
+          numericInput("my_elon", 'Lon.:', value = NA),
+        )
+      ),
+      h6("Enter angles in decimal degreees"),
+
+
 
 
       checkboxGroupInput(
