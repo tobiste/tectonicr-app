@@ -92,7 +92,7 @@ fluidPage(
 
 
 
-      h5("Manual Euler pole"),
+      h5("Manual Euler pole coordinates"),
       fluidRow(
         column(
           5,
@@ -103,7 +103,7 @@ fluidPage(
           numericInput("my_elon", 'Lon.:', value = NA),
         )
       ),
-      h6("Enter angles in decimal degreees"),
+      h6("Enter coordinates in decimal degreees"),
 
 
 
