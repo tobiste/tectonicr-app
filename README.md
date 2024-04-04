@@ -1,5 +1,5 @@
 # tectonicr-app
-Graphical user interface to [tectonicr]{https://tobiste.github.io/tectonicr/}
+Graphical user interface to [tectonicr](https://tobiste.github.io/tectonicr/)
 
 ## Run in browser:
 https://tobiste.shinyapps.io/tectonicr-app/
