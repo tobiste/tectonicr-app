@@ -3,6 +3,7 @@ Graphical user interface to tectonicr
 
 ## Run in browser:
 https://tobiste.shinyapps.io/tectonicr-app/
+(no need to install R and tectonicr)
 
 ## Run in RStudio
 without installing:
