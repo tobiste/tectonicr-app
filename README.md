@@ -1,5 +1,4 @@
-# tectonicr-app
-Graphical user interface for [tectonicr](https://tobiste.github.io/tectonicr/)
+# tectonicr-app --- Graphical user interface for [tectonicr](https://tobiste.github.io/tectonicr/)
 
 **tectonicr** is a free and open-source **R** package for modeling and analyzing
 the direction of the maximum horizontal stress (SHmax) based on the empirical 
