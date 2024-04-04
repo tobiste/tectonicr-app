@@ -4,7 +4,7 @@ fluidPage(
   # App title ----
   headerPanel(
     HTML("<p>Stress analysis using <b>tectonicr</b><br></p>")
-    ),
+  ),
 
   # Sidebar layout with input and output definitions ----
   sidebarLayout(
@@ -87,27 +87,20 @@ fluidPage(
           )
         )
       ),
-      #p("Abbreviations: https://www.unavco.org/software/geodetic-utilities/plate-motion-calculator/plate-motion-calculator.html"),
-      p(tags$a(href="https://www.unavco.org/software/geodetic-utilities/plate-motion-calculator/plate-motion-calculator.html", "Plate abbreviations")),
-
-
-
+      # p("Abbreviations: https://www.unavco.org/software/geodetic-utilities/plate-motion-calculator/plate-motion-calculator.html"),
+      p(tags$a(href = "https://www.unavco.org/software/geodetic-utilities/plate-motion-calculator/plate-motion-calculator.html", "Plate abbreviations")),
       h5("Manual Euler pole coordinates"),
       fluidRow(
         column(
           5,
-          numericInput("my_elat", 'Lat.:', value = NA),
+          numericInput("my_elat", "Lat.:", value = NA),
         ),
         column(
           5,
-          numericInput("my_elon", 'Lon.:', value = NA),
+          numericInput("my_elon", "Lon.:", value = NA),
         )
       ),
       h6("Enter coordinates in decimal degreees"),
-
-
-
-
       checkboxGroupInput(
         inputId = "traj_filt",
         label = "Modelled stress trajectories",
@@ -141,28 +134,26 @@ fluidPage(
       #   value = c(0, 40075/2)
       # ),
       wellPanel(
-      sliderInput(
-        inputId = "rose_bw",
-        label = "Rose diagram's bin width",
-        min = 0,
-        max = 45,
-        value = 8
-      ),
-      checkboxInput("rose_bw_opt", "Optimal bin width", value = TRUE)
+        sliderInput(
+          inputId = "rose_bw",
+          label = "Rose diagram's bin width",
+          min = 0,
+          max = 45,
+          value = 8
+        ),
+        checkboxInput("rose_bw_opt", "Optimal bin width", value = TRUE)
       ),
       wellPanel(
         checkboxInput("por_crs", "Transform map into PoR coordinates", value = FALSE)
       ),
-
       hr(),
       wellPanel(
-      #html("Referece:<br>Stephan, T., Enkelmann, E., & Kroner, U. (2023). Analyzing the horizontal orientation of the crustal stress adjacent to plate boundaries. Scientific Reports, 13(1), 15590. https://doi.org/10.1038/s41598-023-42433-2")
-      HTML("<p>Reference:<br>
+        # html("Referece:<br>Stephan, T., Enkelmann, E., & Kroner, U. (2023). Analyzing the horizontal orientation of the crustal stress adjacent to plate boundaries. Scientific Reports, 13(1), 15590. https://doi.org/10.1038/s41598-023-42433-2")
+        HTML("<p>Reference:<br>
            Stephan, T., Enkelmann, E., & Kroner, U. (2023).
            Analyzing the horizontal orientation of the crustal stress adjacent to plate boundaries. <i>Scientific Reports</i>,
-           13(1), 15590. <a href='https://doi.org/10.1038/s41598-023-42433-2'>https://doi.org/10.1038/s41598-023-42433-2</a></p>"
-      )
-    ),
+           13(1), 15590. <a href='https://doi.org/10.1038/s41598-023-42433-2'>https://doi.org/10.1038/s41598-023-42433-2</a></p>")
+      ),
     ),
 
 
