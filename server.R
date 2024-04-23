@@ -14,11 +14,26 @@ function(input, output) {
       )
   })
 
-  por <- reactive({
-    if (input$plate_fix != "" & input$plate_rot != "") {
-      equivalent_rotation(model(), tolower(input$plate_fix), tolower(input$plate_rot))
+  my_por <- reactive({
+    my_elat <- input$my_elat
+    my_elon <- input$my_elon
+    if (!is.na(my_elat) & !is.na(my_elon)) {
+      data.frame(lat = my_elat, lon = my_elon, plate.rot = "", plate.fix = "")
     } else {
       NULL
+    }
+  })
+
+  por <- reactive({
+    my_por2 <- my_por()
+    if (is.null(my_por2)) {
+      if (input$plate_fix != "" & input$plate_rot != "") {
+        equivalent_rotation(model(), tolower(input$plate_fix), tolower(input$plate_rot))
+      } else {
+        NULL
+      }
+    } else {
+      my_por2
     }
   })
 
@@ -75,7 +90,7 @@ function(input, output) {
   })
 
   rose_bw <- reactive({
-    if(input$rose_bw_opt){
+    if (input$rose_bw_opt) {
       NULL
     } else {
       input$rose_bw
