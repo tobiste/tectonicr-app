@@ -62,6 +62,3 @@ list(
 ) |>
   saveRDS("data/plate_boundaries.rds")
 
-
-
-

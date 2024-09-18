@@ -176,5 +176,7 @@ fluidPage(
         verbatimTextOutput("stats")
       )
     )
-  )
+  ),
+  h4("Tobias Stephan (2024)",
+     style = "position: absolute; bottom: 0;right:0;")
 )
