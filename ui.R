@@ -164,12 +164,12 @@ fluidPage(
       # plotOutput(outputId = "interact_map", height = "600px", click = "plot1_click", brush = brushOpts(id = "plot1_brush")),
       girafeOutput(outputId = "interact_map", height = "500px"),
       column(
-        8,
+        width = 8,
         fluidRow(h3("Rose diagram")),
         plotOutput(outputId = "rose")
       ),
       column(
-        4,
+        width = 3,
         # plotOutput(outputId = "distance_plot"),
         fluidRow(h3("Statistics")),
         verbatimTextOutput("stats")

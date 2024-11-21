@@ -278,34 +278,40 @@ function(input, output) {
     n <- nrow(x)
 
     if (is.null(por())) {
-      mean <- circular_mean(x$azi, w)
-      median <- circular_median(x$azi, w)
-      sd <- circular_sd(x$azi, w)
-      ci <- confidence_angle(x$azi, w = w)
+      #mean <- circular_mean(x$azi, w)
+      #median <- circular_median(x$azi, w)
+      #sd <- circular_sd(x$azi, w)
+      #ci <- confidence_angle(x$azi, w = w)
+      cs <- circular_summary(x$azi, w = w)
       prd <- NA
       disp <- NA
     } else {
       azi_PoR <- PoR_shmax(x, por(), input$prd_type)
       if (input$prd_type == "none") {
-        mean <- circular_mean(azi_PoR, w)
-        median <- circular_median(azi_PoR, w)
-        sd <- circular_sd(azi_PoR, w)
-        ci <- confidence_angle(azi_PoR, w = w)
+        # mean <- circular_mean(azi_PoR, w)
+        # median <- circular_median(azi_PoR, w)
+        # sd <- circular_sd(azi_PoR, w)
+        # ci <- confidence_angle(azi_PoR, w = w)
+        cs <- circular_summary(azi_PoR, w = w)
         prd <- NA
         disp <- NA
       } else {
-        mean <- circular_mean(azi_PoR[, 1], w)
-        median <- circular_median(azi_PoR[, 1], w)
-        sd <- circular_sd(azi_PoR[, 1], w)
-        ci <- confidence_angle(azi_PoR[, 1], w = w)
+        # mean <- circular_mean(azi_PoR[, 1], w)
+        # median <- circular_median(azi_PoR[, 1], w)
+        # sd <- circular_sd(azi_PoR[, 1], w)
+        # ci <- confidence_angle(azi_PoR[, 1], w = w)
+        cs <- circular_summary(azi_PoR[, 1], w = w)
         prd <- azi_PoR$prd[1]
         disp <- circular_dispersion(azi_PoR[, 1], prd, w = w)
       }
     }
 
-    data.frame(
-      value = c(n, mean, median, sd, ci, prd, disp),
-      row.names = c("n", "mean", "median", "sd", "95% confidence", "predicted", "dispersion")
-    )
+    c(test, "predicted" = prd, "dispersion" = disp) |>
+      as.data.frame() |>
+      unname()
+    # data.frame(
+    #   value = c(n, mean, median, sd, ci, prd, disp),
+    #   row.names = c("n", "mean", "median", "sd", "95% confidence", "predicted", "dispersion")
+    # )
   })
 }
