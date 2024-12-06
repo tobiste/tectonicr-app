@@ -306,7 +306,7 @@ function(input, output) {
       }
     }
 
-    c(test, "predicted" = prd, "dispersion" = disp) |>
+    c(cs, "predicted" = prd, "dispersion" = disp) |>
       as.data.frame() |>
       unname()
     # data.frame(
